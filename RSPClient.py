@@ -77,3 +77,7 @@ class RSPClient(object):
     def unregister_observer(self, q, o):
         r = requests.delete(self.base+"/queries/" + q + "/observers/" + o);
         return self._result(r);
+
+    def engine(self):
+        r = requests.get(self.base+"/engine")
+        return self._result(r);
