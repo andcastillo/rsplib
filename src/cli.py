@@ -36,8 +36,9 @@ for s in experiment['streams']:
 w('S',streams)
 
 for q in experiment['queries']:
-    print "Registering query" + q['name'] +" "+ str(q['repeat']) + " times."
+    print "Registering query " + q['name'] +" "+ str(q['repeat']) + " times."
     for i in range(0,q['repeat']):
+        rsp.register_query(q['name'], q['body'])
         for o in  q['observers']:
             print "Registering observers for "+q['name']+ " : " + o['name']
             ro = rsp.new_observer(q['name'], o['name'], o);
@@ -46,7 +47,8 @@ for q in experiment['queries']:
         w('Q', rsp.queries());
 
 for (q,ro) in tobserve:
-    r = RSPCollector(ro['observer']['dataPath'], q['name'], ro,  root+  "/"+q["result_path"]+ro['id']+"/")
+    print ro
+    r = RSPCollector(ro['observer']['dataPath'], q['name'], ro, root+"/"+q["result_path"]+ro['id']+"/")
     
 print experiment_execution
 
@@ -55,7 +57,7 @@ with open(root+"/"+'report.json', 'w') as outfile:
     outfile.write(pretty)
 outfile.close()
 
-timeout = time.time() +  int(experiment['metadata']['duration'])  # 5 minutes from now
+timeout = time.time() +  1000*60*int(experiment['metadata']['duration'])  # 5 minutes from now
 
 try:
     while True:

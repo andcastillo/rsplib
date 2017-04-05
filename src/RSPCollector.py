@@ -25,13 +25,10 @@ class RSPCollector(WebSocketApp):
             on_close = self.on_close)
         self.query = query;
         self.observer = observer;
-        self.result_path = result_path; 
-
-        self.result_path = result_path
-        if not os.path.exists(self.result_path):
-            os.makedirs(self.result_path)
+        if not os.path.exists(result_path):
+            os.makedirs(result_path)
         
-        self.result_file = open(self.result_path+query+".res", "w+")
+        self.result_file = open(result_path+query+".res", "w+")
 
         t=threading.Thread(target=self.run_forever)
         t.setDaemon(True)

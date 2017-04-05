@@ -1,4 +1,4 @@
-{	"metadata": {"id":1, "data":"Tue Apr  4 15:05:33 CEST 2017", "duration": 10},
+{	"metadata": {"id":"1", "data":"Tue Apr  4 15:05:33 CEST 2017", "duration": 10},
 
 	"engine": {
 		"host": "http://csparql.westeurope.cloudapp.azure.com",
@@ -14,8 +14,8 @@
 	"static":[],
 
 	"queries": [{
-		"name": "Q2",
-		"body": "REGISTER STREAM Q2 AS CONSTRUCT {?s ?p ?o} FROM STREAM <AarhusPollutionData182955> [RANGE 30s STEP 5s] WHERE {?s ?p ?o}",
+		"name": "Q1",
+		"body": "REGISTER STREAM Q1 AS CONSTRUCT {?s ?p ?o} FROM STREAM <AarhusPollutionData182955> [RANGE 30s STEP 5s] WHERE {?s ?p ?o}",
 		"repeat": 1,
 		"result_path": "./",
 		"observers": [{
