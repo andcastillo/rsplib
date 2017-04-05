@@ -1,4 +1,4 @@
-import time, json, time, os
+import time, json, time, os, docker
 from RSPClient import RSPClient
 from RSPCollector import RSPCollector
 from sys import argv
@@ -12,6 +12,9 @@ def w(p, i):
     
 with open(argv[1]) as input_file:    
     experiment = json.load(input_file)
+
+
+client = docker.from_env();
 
 rsp = RSPClient(experiment['engine']['host'], experiment['engine']['port']);
 
@@ -48,24 +51,25 @@ for q in experiment['queries']:
 
 for (q,ro) in tobserve:
     print ro
-    r = RSPCollector(ro['observer']['dataPath'], q['name'], ro, root+"/"+q["result_path"]+ro['id']+"/")
-    
-print experiment_execution
+    #r = RSPCollector(command=[ro['observer']['dataPath'], q['name'], root+"/"+q["result_path"]+ro['id']+"/"])
+    client.containers.run("rspsink", command=[ro['observer']['dataPath'], q['name'], root+"/"+q["result_path"]+ro['id']+"/"], 
+            volumes={'./data': {'bind': '/data', 'mode': 'rw'}}, detach=True)
 
 with open(root+"/"+'report.json', 'w') as outfile:
     pretty=json.dumps(experiment_execution, indent=4, sort_keys=True)
+    print pretty
     outfile.write(pretty)
 outfile.close()
 
-timeout = time.time() +  1000*60*int(experiment['metadata']['duration'])  # 5 minutes from now
+# timeout = time.time() +  1000*60*int(experiment['metadata']['duration'])  # 5 minutes from now
 
-try:
-    while True:
-        time.sleep(10)
-        if time.time() > timeout:
-            break
-except KeyboardInterrupt:
-    print 'interrupted!'
+# try:
+#     while True:
+#         time.sleep(10)
+#         if time.time() > timeout:
+#             break
+# except KeyboardInterrupt:
+#     print 'interrupted!'
 
 
 
