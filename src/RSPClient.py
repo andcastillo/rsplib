@@ -18,16 +18,15 @@ class RSPClient(object):
         return resp.json();
 
     def _observer(self, q, o, spec):
-        print self.observer(q, o)
         if(req['type'] == 'ws'):
-            print "websocket observer"   
+            print("websocket observer") 
         else:
-            print "http observer"
+            print("http observer")
         return self._result(resp)
 
     def streams(self):
         r = requests.get(self.base+"/streams")
-        print r._content()
+        print (r._content())
         return self._result(r);
 
     def stream(self, s):

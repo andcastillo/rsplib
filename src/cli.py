@@ -40,7 +40,7 @@ w('S',streams)
 for q in experiment['queries']:
     print "Registering query " + q['name'] +" "+ str(q['repeat']) + " times."
     for i in range(0,q['repeat']):
-        rsp.register_query(q['name'], q['body'])
+        print rsp.register_query(q['name'], q['body'])
         for o in  q['observers']:
             print "Registering observers for "+q['name']+ " : " + o['name']
             ro = rsp.new_observer(q['name'], o['name'], o);
@@ -52,6 +52,7 @@ pretty=json.dumps(experiment_execution, indent=4, sort_keys=True)
 
 for (q,ro) in tobserve:
     client.containers.run("rspsink", name=ro['id']+"_collector", 
+				     auto_remove=True,
 				     command=[ro['observer']['dataPath'], q['name'], "./data/"+root+"/"+q["result_path"]+ro['id']+"/", str(experiment['metadata']['duration']), pretty],
             			     volumes={'resultsdata': {'bind': '/usr/src/app/data', 'mode': 'rw'}}, 
 				     detach=True)
