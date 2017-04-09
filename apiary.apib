@@ -5,19 +5,21 @@ HOST: http://rsp.streamreasoning.org/api
 
 APIs allowing consumers to interact with RDF Stream processors.
 
-## Engine Status [/engine]
+## Engine Collection [/engine]
+
+### Status [GET]
 
 + Response 200 (application/json)
-        
-    {
-        "name": "csparql",
-        "host": "csparql/",
-        "port": 8182,
-        "empty_results": false,
-        "inference": false,
-        "timestamfunction": false,
-        "backloop": true
-    }
+    
+        {
+            "name": "csparql",
+            "host": "csparql/",
+            "port": 8182,
+            "empty_results": false,
+            "inference": false,
+            "timestamfunction": false,
+            "backloop": true
+        }
 
 ## Datasets Collection [/datasets]
 
@@ -27,11 +29,17 @@ APIs allowing consumers to interact with RDF Stream processors.
 
         [
           {
-            "uri": "str2",
+            "iri": "https://streamreasoning.org/ds1.rdf",
+            "isDefault": false,
+            "name": "ds1",
+            "serialization": "RDF/XML",
             "status": "STATIC"
           },
           {
-            "uri": "str1",
+            "iri": "https://streamreasoning.org/ds2.rdf",
+            "isDefault": true,
+            "name": "ds2",
+            "serialization": "JSON-LD",
             "status": "STATIC"
           }
         ]
@@ -61,13 +69,12 @@ APIs allowing consumers to interact with RDF Stream processors.
     + Parameters
         + dataset (required, string) ... String `name` of the Dataset.
     
-    + Headers
+    + Body
     
-    
-                location: (uri, `https://streamreasoning.org/SensorRepository.rdf`) ... Location URI of the dataset.
-                name: (string, `SensorRepository`) ... internal name of the dataset.
-                serialization: (string, `RDF/XML`) ... serialization of the dataset.
-                default: (boolean, 'false') ... specifies if the dataset should be considered as default in queries
+            + location: `https://streamreasoning.org/SensorRepository.rdf`)
+            + name: (string, `SensorRepository`) ... internal name of the dataset.
+            + serialization: (string, `RDF/XML`)  ... serialization of the dataset.
+            + default: (boolean, 'false')  ... specifies if the dataset should be considered as default in queries
 
 + Response 200 (application/json)
 
@@ -126,7 +133,7 @@ APIs allowing consumers to interact with RDF Stream processors.
     + Parameters
         + stream (required, string) ... String `name` of the Stream.
     
-    + Headers
+    + Body
     
     
                 streamIri: (uri, `http://192.168.99.100:4000/sgraph`) ... Location URI of the Stream.
@@ -197,7 +204,7 @@ APIs allowing consumers to interact with RDF Stream processors.
     + Parameters
         + query (required, string, `query1`) String name of the query
 
-    + Headers
+    + Body
 
 
             queryBody: REGISTER STREAM query1 AS CONSTRUCT {?s ?p ?o} FROM STREAM <str1> [RANGE 1m STEP 1m] WHERE {?s ?p ?o}
