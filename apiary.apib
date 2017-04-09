@@ -5,6 +5,88 @@ HOST: http://rsp.streamreasoning.org/api
 
 APIs allowing consumers to interact with RDF Stream processors.
 
+## Engine Status [/engine]
+
++ Response 200 (application/json)
+        
+    {
+        "name": "csparql",
+        "host": "csparql/",
+        "port": 8182,
+        "empty_results": false,
+        "inference": false,
+        "timestamfunction": false,
+        "backloop": true
+    }
+
+## Datasets Collection [/datasets]
+
+### List All Datasets [GET]
+
++ Response 200 (application/json)
+
+        [
+          {
+            "uri": "str2",
+            "status": "STATIC"
+          },
+          {
+            "uri": "str1",
+            "status": "STATIC"
+          }
+        ]
+
+## Datasets [/datasets/{dataset}]
+
+### Retrieve a Datasets [GET]
+
++ Request
+    + Parameters
+        + dataset (required, string, `str1`) ... String `name` of the Datasets.
+
++ Response 200 (application/json)
+        
+        {
+            "iri": "https://streamreasoning.org/SensorRepository.rdf",
+            "isDefault": false,
+            "name": "SensorRepository",
+            "serialization": "RDF/XML",
+            "status": "STATIC"
+        }
+
+### Register a Dataset [POST]
+
++ Request (application/x-www-form-urlencoded)
+
+    + Parameters
+        + dataset (required, string) ... String `name` of the Dataset.
+    
+    + Headers
+    
+    
+                location: (uri, `https://streamreasoning.org/SensorRepository.rdf`) ... Location URI of the dataset.
+                name: (string, `SensorRepository`) ... internal name of the dataset.
+                serialization: (string, `RDF/XML`) ... serialization of the dataset.
+                default: (boolean, 'false') ... specifies if the dataset should be considered as default in queries
+
++ Response 200 (application/json)
+
+    + Body
+    
+            "Dataset SensorRepository succesfully registered with IRI https://streamreasoning.org/SensorRepository.rdf"
+
+### Delete a Dataset [DELETE]    
+
++ Request
+    + Parameters
+        + dataset (required, string, `str1`) ... String `name` of the Datasets.
+
++ Response 200 (application/json)
+    
+    + Body
+    
+            "Dataset SensorRepository succesfully unregistered"
+
 ## Stream Collection [/streams]
 
 ### List All Streams [GET]
@@ -57,7 +139,15 @@ APIs allowing consumers to interact with RDF Stream processors.
 
 ### Delete a Stream [DELETE]    
 
-     {TODO}
++ Request
+    + Parameters
+        + stream (required, string, `str1`) ... String `name` of the stream.
+
++ Response 200 (application/json)
+    
+    + Body
+    
+            "stream name succesfully unregistered"
 
 ## Query Collection [/queries]
 
