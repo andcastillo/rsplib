@@ -49,8 +49,9 @@ class RSPClient(object):
         r = requests.get(self.base+"/queries/" + q);
         return self._result(r);
 
-    def register_query(self, q, body):        
-        r = requests.post(self.base+"/queries/" + q, data = { 'queryBody': body }, headers=default_headers);
+    def register_query(self, q, qtype, body):        
+        data = { 'queryBody': "REGISTER " + qtype.upper() + " " + q + " AS " + body }
+        r = requests.post(self.base+"/queries/" + q, data = data, headers=default_headers);
         return self._result(r);
 
     def unregister_query(self, q):
