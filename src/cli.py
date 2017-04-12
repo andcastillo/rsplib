@@ -19,7 +19,7 @@ rsp = RSPClient(experiment['engine']['host'], experiment['engine']['port']);
 
 experiment_execution['!Experiment'] = experiment
 experiment_execution['E'] = rsp.engine()
-experiment_execution['D'] = experiment['static']
+experiment_execution['D'] = []
 experiment_execution['S'] = None
 experiment_execution['Q'] = []
 experiment_execution['K'] = None # save the KPIs
@@ -29,6 +29,13 @@ root = experiment_execution['E']['runUUID']
 
 if not os.path.exists(root):
             os.makedirs(root)
+
+datasets=[]
+for d in experiment['datasets']:
+        print "Registering dataset: " + str(d['name'])
+        datasets.append(rsp.register_dataset( d['name'], d['location'], d['serialization']="RDF/XML", d['default'] ))
+
+w('D', datasets)
 
 streams=[]
 for s in experiment['streams']:
