@@ -24,6 +24,24 @@ class RSPClient(object):
             print("http observer")
         return self._result(resp)
 
+    def datasets(self):
+        r = requests.get(self.base+"/datasets")
+        print (r._content())
+        return self._result(r);
+
+    def dataset(self, s):
+        r = requests.get(self.base+"/datasets/" + s)
+        return self._result(r);
+
+    def register_dataset(self, dataset_name, dataset_uri, dataset_serialization="RDF/XML", default=False):
+        data = { "iri": dataset_uri, "name": dataset_name, "isDefault": default, "serialization": dataset_serialization }
+        r = requests.post(self.base+"/datasets/"+stream_name, data = data, headers=default_headers);
+        return self._result(r);
+
+    def unregister_dataset(self, s):
+        r = requests.delete(self.base+"/datasets/"+s);
+        return self._result(r);
+
     def streams(self):
         r = requests.get(self.base+"/streams")
         print (r._content())
