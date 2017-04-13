@@ -11,26 +11,21 @@
 		"location": "http://triplewave1.westeurope.cloudapp.azure.com:4000/sgraph"
 	}],
 	
-	"static":[],
-
+	"datasets":[ {"name":"SensorRepository", "location":"https://rsplab.blob.core.windows.net/static/SensorRepository.rdf",
+                  "isDefault":false, "serialization":"RDF/XML"],
+                  
 	"queries": [{
 		"name": "Q1",
-		"body": "REGISTER STREAM Q1 AS CONSTRUCT {?s ?p ?o} FROM STREAM <AarhusPollutionData182955> [RANGE 30s STEP 5s] WHERE {?s ?p ?o}",
+        "type": "STREAM",
+		"body": "CONSTRUCT {?s ?p ?o} FROM STREAM <AarhusPollutionData182955> [RANGE 30s STEP 5s] WHERE {?s ?p ?o}",
 		"repeat": 1,
 		"result_path": "./",
 		"observers": [{
 			"name": "observer1",
 			"persist": true,
-			"type": "ws",
+			"type": "ws"
 			"host": "csparql.westeurope.cloudapp.azure.com",
 			"port": 9101
-		}, 
-		{
-			"name": "observer2",
-			"persist": true,
-			"type": "ws",
-			"host": "csparql.westeurope.cloudapp.azure.com",
-			"port": 9102
 		}]
 	}]
 }
