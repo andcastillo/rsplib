@@ -1,30 +1,29 @@
-from RSPClient import RSPClient
-import websocket
-import thread
-import time
+import rsp, json
 
-def on_message(ws, message):
-    print message
+e = rsp.Experiment()
 
-def on_error(ws, error):
-    print error
+d = rsp.Dialects.CSPARQL
 
-def on_close(ws):
-    res = rsp.unregister_observer('query1', 'observer1');
-    print "### closed ###"
+e.add_engine('http://csparql.westeurope.cloudapp.azure.com', 8182, d)
 
-if __name__ == "__main__":
-    rsp = RSPClient("http://localhost", 8181);
+s = e.add_query("Q1", "query", d).add_stream("str1", "http://str1.com").add_window(10, 5)
 
-    res = rsp.register_stream('str1', 'http://192.168.99.100:4000/sgraph');
-    print res
-    res = rsp.register_query('query1', 'REGISTER STREAM query1 AS CONSTRUCT {?s ?p ?o} FROM STREAM <str1> [RANGE 1m STEP 1m] WHERE {?s ?p ?o}');
-    print res
-    res = rsp.new_observer('query1', 'observer1', {'type':'ws', 'host':'localhost', 'port': 8282});
+q = e.get_query("Q1").add_windowed_stream("str2", "http://str2.com", 15,15)
 
-    websocket.enableTrace(True)
-    ws = websocket.WebSocketApp(res['observer']['dataPath'],
-                              on_message = on_message,
-                              on_error = on_error,
-                              on_close = on_close)
-    ws.run_forever()
+q = q.add_windowed_stream("str3", "http://str3.com", 20,20)
+
+
+d = e.get_query("Q1").add_dataset("name", "http://dataset.rdf", serialization="RDF/XML", default=True)
+
+q.set_select_clause("?obId1 ?obId2 ?v1 ?v2 ")
+q.set_where_clause("{?p1   a <http://www.insight-centre.org/citytraffic#ParkingVacancy>. ?p2   a <http://www.insight-centre.org/citytraffic#CongestionLevel>. {?obId1 a ?ob. ?obId1 <http://purl.oclc.org/NET/ssnx/ssn#observedProperty> ?p1. ?obId1 <http://purl.oclc.org/NET/sao/hasValue> ?v1.?obId1 <http://purl.oclc.org/NET/ssnx/ssn#observedBy> <http://www.insight-centre.org/dataset/SampleEventService#AarhusParkingDataKALKVAERKSVEJ>. }{?obId2 a ?ob.?obId2 <http://purl.oclc.org/NET/ssnx/ssn#observedProperty> ?p2.?obId2 <http://purl.oclc.org/NET/sao/hasValue> ?v2.?obId2 <http://purl.oclc.org/NET/ssnx/ssn#observedBy> <http://www.insight-centre.org/dataset/SampleEventService#AarhusTrafficData158505>.}}")
+
+
+
+e1 = rsp.open_remote('https://rsplab.blob.core.windows.net/experiments/experiment.json')
+
+
+print e
+
+print "---"
+print e1
