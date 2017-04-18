@@ -13,7 +13,7 @@ def open_file(path):
 
 def _record(p, i):
     experiment_execution[p] = i
-
+    
 def _spawn_collectors(tobserve,experiment,report):
     for (q,ro) in tobserve:
             client.containers.run("rspsink", name=ro['id']+"_collector", 
@@ -24,56 +24,38 @@ def _spawn_collectors(tobserve,experiment,report):
 
 def execute(experiment, stream_running=True, collect=False):
     
-    engine = RSPClient(experiment['engine']['host'], experiment['engine']['port']);
+    engine = RSPClient(experiment.engine()['host'], experiment.engine()['port']);
+    
+    execution = ExperimentExecution(experiment)
+    execution.set_engine(engine.engine())
 
-    experiment_execution['Origin'] = experiment
-    experiment_execution['E'] = client.engine()
-    experiment_execution['D'] = []
-    experiment_execution['S'] = None
-    experiment_execution['Q'] = []
-    experiment_execution['K'] = None # save the KPIs
-    experiment_execution['R'] = None # save the result location
-
-    root = experiment_execution['E']['runUUID']
-
-    if not os.path.exists(root):
-                os.makedirs(root)
-
-    datasets=[]
-    for d in experiment['datasets']:
-            print "Registering dataset: " + str(d['name'])
-            datasets.append(rsp.register_dataset( d['name'], d['location'], d['serialization'], d['default'] ))
-
-    _record('D', datasets)
-
-    streams=[]
-
+    for d in experiment.graphs():
+            print("Registering static sources: " + d.name)
+            execution.add_graph(engine.register_graph( d.name, d.location, d.serialization, d.default ))
+            
     #if(not stream_running):
         #TODO start streams on triplewave host
 
-    for s in experiment['streams']:
-            print "Registering stream: " + str(s['name'])
-            streams.append(rsp.register_stream( s['name'], s['location'] ))
+    for s in experiment.stream_set():
+            print ("Registering stream: " + s.name)
+            execution.add_stream(engine.register_stream( s.name, s.location ))
 
-    _record('S',streams)
-
-    for q in experiment['queries']:
-        print "Registering query " + q['name'] +" "+ str(q['repeat']) + " times."
-        for i in range(0,q['repeat']):
-            print rsp.register_query(q['name'], q['body'])
-            for o in  q['observers']:
-                print "Registering observers for "+q['name']+ " : " + o['name']
-                ro = rsp.new_observer(q['name'], o['name'], o);
-                if o['persist']:
-                    tobserve.append((q,ro));
-            _record('Q', rsp.queries());
-
-    report=json.dumps(experiment_execution, indent=4, sort_keys=True)
+    for q in experiment.query_set():
+        print("Registering query " + q.name +" ")
+        for i in range(0,1):
+            print(engine.register_query(q.name, q.query_type, q.query_body()))
+            print("Registering observers for "+q.name)
+            ro = engine.new_observer(q.name, "default", {"host":"csparql.westeurope.cloudapp.azure.com","type":"ws","port":9101,"name":"default"}); 
+            execution.add_observer({q.name:ro})
+            execution.add_queries(engine.queries());
+    
+    #print(experiment_execution)
+    #report=json.dumps(experiment_execution, indent=4, sort_keys=True)
 
     if(collect):
        _spawn_collectors(tobserve, experiment, report)
 
-    print report
+    return execution
 #end
 
 
@@ -86,47 +68,67 @@ class Dialects(Enum):
 class Window(object):
 
     def __init_(self, omega, beta):
-        self.omega=omega
-        self.beta=beta
+        self.range=omega
+        self.step=beta
+
+    def __dict__(self):
+        return {"range": str(self.range), "step":str(self.step)};
+
+    def __str__(self):
+        return self.__dict__().__str__();
+
+    def __repr__(self):
+        return self.__str__()
 
 class Stream(object):
 
     def __init__(self, name, sgraph_location, scale_factor=1):
-        self.name=name;
-        self.sgraph_location=sgraph_location
+        self.name=name
+        self.location=sgraph_location
         self.scale_factor=scale_factor
+        self.window=None
 
     def sgraph(self):
-        return requests.get(self.sgraph_location).json()
+        return requests.get(self.location).json()
 
     def add_window(self, w, b):
-        self.window = (w,b)
+        self.range=w
+        self.step=b
 
     def range(self):
-        return str(self.window[0]) 
+        return self.range 
 
     def step(self):
-        return str(self.window[1])
+        return self.step
+
+    def __dict__(self):
+        return { "name":self.name, "location":self.location, "scale_factor":self.scale_factor, 
+                "window":{"range":self.range, "step":self.step }}
 
     def __str__(self):
-        return {'name':self.name, 'location':self.sgraph_location, 'scale_factor':self.scale_factor}.__str__()
+        return self.__dict__().__str__()
 
     def __repr__(self):
         return self.__str__()
 
-class Dataset(object):
+class Graph(object):
 
-    def __init__(self, name, location, serialization, default=False):
+    def __init__(self, name, location, serialization, default="false"):
         self.name=name
         self.location=location
-        self.serialization=serialization
         self.default=default
+        self.serialization=serialization
+
+    def __dict__(self):
+        return {"name":self.name, "location":self.location, "default":self.default, "serialization":self.serialization }
 
     def __str__(self):
-        return {'name':self.name, 'location':self.location, 'default':self.default, 'serialization':self.serialization}.__str__()
-
+        return self.__dict__().__str__()
+    
     def __repr__(self):
         return self.__str__()
+    
+    
 
 class Query(object):
 
@@ -136,7 +138,7 @@ class Query(object):
         self.query_type = query_type
         self.name= name
         self.streams = []
-        self.datasets = [] 
+        self.graphs = [] 
         self.dialect=dialect
 
     def set_select_clause(self,select):
@@ -158,10 +160,10 @@ class Query(object):
         self.experiment._add_to_stream_set(s)
         return self
     
-    def add_dataset(self,dataset,location, serialization, default):
-        d = Dataset(location, serialization, default)
-        self.datasets.append(d)
-        self.experiment._add_to_datasets(d)
+    def add_graph(self, g, location, serialization, default):
+        d = graph(g,location, serialization, default)
+        self.graphs.append(d)
+        self.experiment._add_to_graphs(d)
         return d
     
     def _to_string_csparql(self):
@@ -173,14 +175,14 @@ class Query(object):
         
         query+=self.select_clause        
         for s in self.streams:
-            streamQuery = " FROM STREAM <"+s.name+"> [RANGE "+s.range()+" STEP "+ s.step()+"]\n"
+            streamQuery = " FROM STREAM <"+s.name+"> [RANGE "+str(s.range)+" STEP "+ str(s.step)+"]\n"
             query+=streamQuery
         
-        for d in self.datasets:
-            datasetQuery = "FROM <"+d.name+">\n"
-            query+=datasetQuery
+        for d in self.graphs:
+            graphQuery = "FROM <"+d.location+">\n"
+            query+=graphQuery
             
-        query+="WHERE "
+        query+="\nWHERE "
         query+=self.where_clause
         return query
     
@@ -188,14 +190,17 @@ class Query(object):
         query=""
         return query
 
-    def query_body():
+    def query_body(self):
         return {Dialects.CSPARQL: self._to_string_csparql, 
                  Dialects.CQELS: self._to_string_cqels }[self.dialect]().__str__()
 
-    def __str__(self):
-        m = { Dialects.CSPARQL: self._to_string_csparql, 
+    def __dict__(self):
+        body = { Dialects.CSPARQL: self._to_string_csparql, 
                  Dialects.CQELS: self._to_string_cqels }[self.dialect]().__str__()
-        return m
+        return {"name":self.name, "body": body, "type": self.query_type, "dialect":self.dialect.name}
+
+    def __str__(self):
+        return self.__dict__().__str__()
         
     def __repr__(self):
         return self.__str__()
@@ -208,11 +213,11 @@ class Experiment(object):
     def __init__(self,  *args):
         if(len(args)==0):
             self.experiment={
-                'metadata' : {},
-                'queries'  : [],
-                'streams'  : [],
-                'datasets' : [],
-                'engine'   : {}
+                "metadata" : {},
+                "queries"  : [],
+                "streams"  : [],
+                "graphs" : [],
+                "engine"   : {}
             }
         else:
             self.experiment=args[0]
@@ -220,8 +225,8 @@ class Experiment(object):
                 self.experiment['queries'] = []
             if(not('streams' in self.experiment )):
                 self.experiment['streams'] = []
-            if(not('datasets' in self.experiment )):
-                self.experiment['datasets'] = []
+            if(not('graphs' in self.experiment )):
+                self.experiment['graphs'] = []
 
     def metadata(self):
         return self.experiment['metadata']
@@ -235,8 +240,8 @@ class Experiment(object):
     def query_set(self):
         return self.experiment['queries']
 
-    def datasets(self):
-        return self.experiment['datasets']
+    def graphs(self):
+        return self.experiment['graphs']
 
     def _add_to_query_set(self, q):
         self.experiment['queries'].append(q)
@@ -244,28 +249,99 @@ class Experiment(object):
     def _add_to_stream_set(self, s):
         self.experiment['streams'].append(s)
 
-    def _add_to_datasets(self, d):
-        self.experiment['datasets'].append(d)
+    def _add_to_graphs(self, d):
+        self.experiment['graphs'].append(d)
 
     def add_engine(self, host, port,d):
-        self.experiment['engine']={'host':host, 'port':port, "dialect": d}
+        self.experiment['engine']={"host":host, "port":port, "dialect": d.name}
+        return self
 
     def add_query(self, name, qtype="Construct", dialect=Dialects.CSPARQL):
         q = Query(name, qtype, dialect);
         q.set_experiment(self)
-        self._add_to_query_set(q) 
+        self._add_to_query_set(q)
         return q
-
+    
     def get_query(self, name):
         for q in self.experiment['queries']:
             if q.name==name:
                 return q
         print(name+" not found")
+        return None
+        
+        
+    def add_stream(self, query, name, location):
+        q = self.get_query(query)
+        if(q):
+            s = Stream(name, location)
+            q.streams.append(s)
+            self._add_to_stream_set(s)
+        return s
 
+    def add_windowed_stream(self, query, name, location, omega, beta):
+        q = self.get_query(query)
+        if(q):
+            s = Stream(name, location)
+            s.add_window(omega, beta)
+            q.streams.append(s)
+            self._add_to_stream_set(s)
+        return self    
+    
+    def add_graph(self, query, g, location, serialization, default):
+        q = self.get_query(query)
+        if(q):
+            d = Graph(g,location, serialization, default)
+            q.graphs.append(d)
+            self._add_to_graphs(d)
+        return self
+    
     def __str__(self):
         return self.experiment.__str__()
+    
+    def __dict__(self):
+        return self.experiment
+        
 
+class ExperimentExecution(object):
+    
+    def __init__(self, origin):
+        self.experiment_execution={}
+        self.experiment= origin
+        
+        self.experiment_execution['D'] = []
+        self.experiment_execution['S'] = []
+        self.experiment_execution['Q'] = []
+        self.experiment_execution['O'] = []
+        self.experiment_execution['K'] = None # save the KPIs
+        self.experiment_execution['R'] = None # save the result location
+       
+    def set_engine(self, engine):
+        self.experiment_execution['E'] = engine
+        root = self.experiment_execution['E']['runUUID']
+        if not os.path.exists(root):
+                os.makedirs(root)
 
+    def add_graph(self, d):
+         self.experiment_execution['D'].append(d)
+    
+    def add_stream(self, s):
+         self.experiment_execution['S'].append(s)
+    
+    def add_query(self, q):
+         self.experiment_execution['Q'].append(q)
+    
+    def add_queries(self, ql):
+        for q in ql:
+             self.add_query(q)
+    
+    def add_observer(self, o):
+        self.experiment_execution['O'].append(o)
+        
+    def __dict__(self):
+        return {'Experiment': self.experiment.__dict__(),
+                           'Execution': self.experiment_execution }
+    
+            
 default_headers = {
           'Content-Type': 'application/x-www-form-urlencoded',
           'Access-Control-Allow-Origin': '*'
@@ -279,6 +355,7 @@ class RSPClient(object):
         self.base = self.endpoint+":"+str(self.port);
 
     def _result(self, resp):
+        print(resp.text)
         return resp.json();
 
     def _observer(self, q, o, spec):
@@ -288,27 +365,26 @@ class RSPClient(object):
             print("http observer")
         return self._result(resp)
 
-    def datasets(self):
+    def graphs(self):
         r = requests.get(self.base+"/datasets")
         print (r._content())
         return self._result(r);
 
-    def dataset(self, s):
+    def graph(self, s):
         r = requests.get(self.base+"/datasets/" + s)
         return self._result(r);
 
-    def register_dataset(self, dataset_name, dataset_uri, dataset_serialization="RDF/XML", default=False):
-        data = { "iri": dataset_uri, "name": dataset_name, "isDefault": default, "serialization": dataset_serialization }
-        r = requests.post(self.base+"/datasets/"+stream_name, data = data, headers=default_headers);
+    def register_graph(self, graph_name, graph_uri, graph_serialization="RDF/XML", default=False):
+        data = { "location": graph_uri, "name": graph_name, "isDefault": default, "serialization": graph_serialization }
+        r = requests.post(self.base+"/datasets/"+graph_name, data = data, headers=default_headers);
         return self._result(r);
 
-    def unregister_dataset(self, s):
+    def unregister_graph(self, s):
         r = requests.delete(self.base+"/datasets/"+s);
         return self._result(r);
 
     def streams(self):
         r = requests.get(self.base+"/streams")
-        print (r._content())
         return self._result(r);
 
     def stream(self, s):
