@@ -65,11 +65,22 @@ class Dialects(Enum):
     RSPQL   = "RSPQL"
     RSEPQL  = "RSEPQL"
 
+class QueryType(Enum):
+    CONSTRUCT = "CONSTRUCT"
+    SELECT    = "SELECT"
+    ASK       = "ASK"
+    DESCRIBE  = "DESCRIBE"
+
 class Window(object):
 
-    def __init_(self, omega, beta):
+    def __init__(self, omega, beta):
         self.range=omega
         self.step=beta
+        self.bgp=None
+
+    def add_bgp(self,bgp):
+        self.bgp=bgp
+        return self
 
     def __dict__(self):
         return {"range": str(self.range), "step":str(self.step)};
@@ -92,8 +103,8 @@ class Stream(object):
         return requests.get(self.location).json()
 
     def add_window(self, w, b):
-        self.range=w
-        self.step=b
+        self.window = Window(w,b)
+        return self.window
 
     def range(self):
         return self.range 
@@ -103,7 +114,7 @@ class Stream(object):
 
     def __dict__(self):
         return { "name":self.name, "location":self.location, "scale_factor":self.scale_factor, 
-                "window":{"range":self.range, "step":self.step }}
+                "window":{"range":self.window.range, "step":self.window.step }}
 
     def __str__(self):
         return self.__dict__().__str__()
