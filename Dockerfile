@@ -1,6 +1,7 @@
 FROM  jupyter/datascience-notebook:latest
 
 RUN pip install --upgrade pip
+RUN pip install rsplib
 RUN pip install docker
 RUN pip install websocket-client
 #RUN pip install cryptography
