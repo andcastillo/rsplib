@@ -1,0 +1,44 @@
+{
+    "engine": {
+        "dialect": "CSPARQL",
+        "host": "http://csparql.westeurope.cloudapp.azure.com",
+        "port": 8182
+    },
+    "graphs": [
+        {
+            "default": "true",
+            "location": "https://rsplab.blob.core.windows.net/static/SensorRepository.rdf",
+            "name": "SensorRepository",
+            "serialization": "RDF/XML"
+        }
+    ],
+    "metadata": {},
+    "queries": [
+        {
+            "body": "SELECT ?obId1 ?obId2 ?lat1 ?lon1 ?lat2 ?lon2 FROM STREAM <AarhusParkingDataKALKVAERKSVEJ> [RANGE 3s STEP 1s]\n FROM STREAM <UserLocationService> [RANGE 3s STEP 1s]\nFROM <https://rsplab.blob.core.windows.net/static/SensorRepository.rdf>\n\nWHERE {?p1   a <http://www.insight-centre.org/citytraffic#ParkingVacancy>.?p1 <http://purl.oclc.org/NET/ssnx/ssn#isPropertyOf> ?foi1.?foi1 <http://www.insight-centre.org/citytraffic#hasStartLatitude> ?lat1.?foi1 <http://www.insight-centre.org/citytraffic#hasStartLongitude> ?lon1.{?obId1 a ?ob.?obId1 <http://purl.oclc.org/NET/ssnx/ssn#observedProperty> ?p1.?obId1 <http://purl.oclc.org/NET/sao/hasValue> ?v1.?obId1 <http://purl.oclc.org/NET/ssnx/ssn#observedBy> <http://www.insight-centre.org/dataset/SampleEventService#AarhusParkingDataKALKVAERKSVEJ>.}{?obId2 a ?ob.?obId2 <http://purl.oclc.org/NET/sao/hasValue> ?v2.?v2 <http://www.insight-centre.org/citytraffic#hasLatitude> ?lat2.?v2 <http://www.insight-centre.org/citytraffic#hasLongitude> ?lon2.?obId2 <http://purl.oclc.org/NET/ssnx/ssn#observedBy> <http://www.insight-centre.org/dataset/SampleEventService#UserLocationService>.}}",
+            "dialect": "CSPARQL",
+            "name": "Q6",
+            "type": "query"
+        }
+    ],
+    "streams": [
+        {
+            "location": "http://triplewave1.westeurope.cloudapp.azure.com:4000/sgraph",
+            "name": "AarhusParkingDataKALKVAERKSVEJ",
+            "scale_factor": 1,
+            "window": {
+                "range": "3s",
+                "step": "1s"
+            }
+        },
+        {
+            "location": "http://triplewave1.westeurope.cloudapp.azure.com:4002/sgraph",
+            "name": "UserLocationService",
+            "scale_factor": 1,
+            "window": {
+                "range": "3s",
+                "step": "1s"
+            }
+        }
+    ]
+}
