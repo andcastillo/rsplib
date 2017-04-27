@@ -19,4 +19,4 @@ RUN pip install influxdb
 RUN pip list
 
 
-ENTRYPOINT ["start-notebook.sh","--NotebookApp.token=''", "--NotebookApp.base_url=/ide/"]
+ENTRYPOINT ["start-notebook.sh","--NotebookApp.token=''"]
