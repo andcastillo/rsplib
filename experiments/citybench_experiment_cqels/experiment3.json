@@ -1,0 +1,37 @@
+{
+    "engine": {
+        "dialect": "CQELS",
+        "host": "http://cqels.westeurope.cloudapp.azure.com",
+        "port": 80
+    },
+    "graphs": [],
+    "metadata": {},
+    "queries": [
+        {
+            "body": "SELECT ?obId1  ?obId3  ?v1  ?v3 (((?v1+?v3)/2) as ?avgCongest) where {stream <AarhusTrafficData182955> [range 3s]\n{?obId1 a ?ob.?obId1 <http://purl.oclc.org/NET/ssnx/ssn#observedProperty> ?p1.?obId1 <http://purl.oclc.org/NET/sao/hasValue> ?v1.?obId1 <http://purl.oclc.org/NET/ssnx/ssn#observedBy> <http://www.insight-centre.org/dataset/SampleEventService#AarhusTrafficData182955>.}stream <AarhusTrafficData158505> [range 3s]\n{?obId3 a ?ob.?obId3 <http://purl.oclc.org/NET/ssnx/ssn#observedProperty> ?p3.?obId3 <http://purl.oclc.org/NET/sao/hasValue> ?v3.?obId3 <http://purl.oclc.org/NET/ssnx/ssn#observedBy> <http://www.insight-centre.org/dataset/SampleEventService#AarhusTrafficData158505>.}?p1   a <http://www.insight-centre.org/citytraffic#CongestionLevel>. ?p3   a <http://www.insight-centre.org/citytraffic#CongestionLevel>.}",
+            "dialect": "CQELS",
+            "name": "Q3",
+            "type": "query"
+        }
+    ],
+    "streams": [
+        {
+            "location": "http://triplewave1.westeurope.cloudapp.azure.com:4000/sgraph",
+            "name": "AarhusTrafficData182955",
+            "scale_factor": 1,
+            "window": {
+                "range": "3s",
+                "step": "1s"
+            }
+        },
+        {
+            "location": "http://triplewave1.westeurope.cloudapp.azure.com:4001/sgraph",
+            "name": "AarhusTrafficData158505",
+            "scale_factor": 1,
+            "window": {
+                "range": "3s",
+                "step": "1s"
+            }
+        }
+    ]
+}

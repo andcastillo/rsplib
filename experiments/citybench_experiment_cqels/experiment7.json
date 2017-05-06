@@ -1,0 +1,37 @@
+{
+    "engine": {
+        "dialect": "CQELS",
+        "host": "http://cqels.westeurope.cloudapp.azure.com",
+        "port": 80
+    },
+    "graphs": [],
+    "metadata": {},
+    "queries": [
+        {
+            "body": "SELECT ?obId1 ?obId2 ?v1 ?v2 where {stream <AarhusParkingDataKALKVAERKSVEJ> [range 3s]\n{?obId1 a ?ob.?obId1 <http://purl.oclc.org/NET/ssnx/ssn#observedProperty> ?p1.?obId1 <http://purl.oclc.org/NET/sao/hasValue> ?v1.?obId1 <http://purl.oclc.org/NET/ssnx/ssn#observedBy> <http://www.insight-centre.org/dataset/SampleEventService#AarhusParkingDataKALKVAERKSVEJ>.}stream <AarhusParkingDataSKOLEBAKKEN> [range 3s]\n{?obId2 a ?ob.?obId2 <http://purl.oclc.org/NET/ssnx/ssn#observedProperty> ?p2.?obId2 <http://purl.oclc.org/NET/sao/hasValue> ?v2.?obId2 <http://purl.oclc.org/NET/ssnx/ssn#observedBy> <http://www.insight-centre.org/dataset/SampleEventService#AarhusParkingDataSKOLEBAKKEN>.}?p1   a <http://www.insight-centre.org/citytraffic#ParkingVacancy>.?p2   a <http://www.insight-centre.org/citytraffic#ParkingVacancy>.Filter(?v1<1||?v2<1)}",
+            "dialect": "CQELS",
+            "name": "Q7",
+            "type": "query"
+        }
+    ],
+    "streams": [
+        {
+            "location": "http://triplewave1.westeurope.cloudapp.azure.com:4000/sgraph",
+            "name": "AarhusParkingDataKALKVAERKSVEJ",
+            "scale_factor": 1,
+            "window": {
+                "range": "3s",
+                "step": "0"
+            }
+        },
+        {
+            "location": "http://triplewave1.westeurope.cloudapp.azure.com:4001/sgraph",
+            "name": "AarhusParkingDataSKOLEBAKKEN",
+            "scale_factor": 1,
+            "window": {
+                "range": "3s",
+                "step": "0"
+            }
+        }
+    ]
+}

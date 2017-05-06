@@ -1,0 +1,37 @@
+{
+    "engine": {
+        "dialect": "CQELS",
+        "host": "http://cqels.westeurope.cloudapp.azure.com",
+        "port": 80
+    },
+    "graphs": [],
+    "metadata": {},
+    "queries": [
+        {
+            "body": "SELECT ?obId1 ?obId2 ?lat1 ?lon1 ?lat2 ?lon2 where {stream <AarhusParkingDataKALKVAERKSVEJ> [range 20s slide 1s]\n{?obId2 a ?ob.?obId2 <http://purl.oclc.org/NET/ssnx/ssn#observedProperty> ?p2.?obId2 <http://purl.oclc.org/NET/sao/hasValue> ?v2.?obId2 <http://purl.oclc.org/NET/ssnx/ssn#observedBy> <http://www.insight-centre.org/dataset/SampleEventService#AarhusTrafficData158505>.}stream <UserLocationService> [range 3s]\n{?obId3 a ?ob.?obId3 <http://purl.oclc.org/NET/ssnx/ssn#observedProperty> ?p3.?obId3 <http://purl.oclc.org/NET/sao/hasValue> ?v3.?obId3 <http://purl.oclc.org/NET/ssnx/ssn#observedBy> <http://www.insight-centre.org/dataset/SampleEventService#AarhusTrafficData158505>.}?p1   a <http://www.insight-centre.org/citytraffic#ParkingVacancy>.?p1 <http://purl.oclc.org/NET/ssnx/ssn#isPropertyOf> ?foi1.?foi1 <http://www.insight-centre.org/citytraffic#hasStartLatitude> ?lat1.?foi1 <http://www.insight-centre.org/citytraffic#hasStartLongitude> ?lon1.}",
+            "dialect": "CQELS",
+            "name": "Q6",
+            "type": "query"
+        }
+    ],
+    "streams": [
+        {
+            "location": "http://triplewave1.westeurope.cloudapp.azure.com:4000/sgraph",
+            "name": "AarhusParkingDataKALKVAERKSVEJ",
+            "scale_factor": 1,
+            "window": {
+                "range": "20s",
+                "step": "1s"
+            }
+        },
+        {
+            "location": "http://triplewave1.westeurope.cloudapp.azure.com:4001/sgraph",
+            "name": "UserLocationService",
+            "scale_factor": 1,
+            "window": {
+                "range": "3s",
+                "step": "0"
+            }
+        }
+    ]
+}

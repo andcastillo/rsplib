@@ -1,0 +1,37 @@
+{
+    "engine": {
+        "dialect": "CQELS",
+        "host": "http://cqels.westeurope.cloudapp.azure.com",
+        "port": 80
+    },
+    "graphs": [],
+    "metadata": {},
+    "queries": [
+        {
+            "body": "SELECT ?obId1 ?obId2 ?obId3 ?obId4 ?v1 ?v2 ?v3 ?v4 where {stream <AarhusWeatherData0> [range 3s]\n{?obId1 a ?ob.?obId1 <http://purl.oclc.org/NET/ssnx/ssn#observedProperty> ?p1.?obId1 <http://purl.oclc.org/NET/sao/hasValue> ?v1.?obId1 <http://purl.oclc.org/NET/ssnx/ssn#observedBy> <http://www.insight-centre.org/dataset/SampleEventService#AarhusWeatherData0>.?obId2 a ?ob.?obId2 <http://purl.oclc.org/NET/ssnx/ssn#observedProperty> ?p2.?obId2 <http://purl.oclc.org/NET/sao/hasValue> ?v2.?obId2 <http://purl.oclc.org/NET/ssnx/ssn#observedBy> <http://www.insight-centre.org/dataset/SampleEventService#AarhusWeatherData0>.?obId3 a ?ob.?obId3 <http://purl.oclc.org/NET/ssnx/ssn#observedProperty> ?p3.?obId3 <http://purl.oclc.org/NET/sao/hasValue> ?v3.?obId3 <http://purl.oclc.org/NET/ssnx/ssn#observedBy> <http://www.insight-centre.org/dataset/SampleEventService#AarhusWeatherData0>.}stream <AarhusTrafficData158505> [range 3s]\n{?obId4 a ?ob.?obId4 <http://purl.oclc.org/NET/ssnx/ssn#observedProperty> ?p4.?obId4 <http://purl.oclc.org/NET/sao/hasValue> ?v4.?obId4 <http://purl.oclc.org/NET/ssnx/ssn#observedBy> <http://www.insight-centre.org/dataset/SampleEventService#AarhusTrafficData158505>.}?p1   a <http://www.insight-centre.org/citytraffic#Temperature>.?p2   a <http://www.insight-centre.org/citytraffic#Humidity>.?p3   a <http://www.insight-centre.org/citytraffic#WindSpeed>.?p4   a <http://www.insight-centre.org/citytraffic#CongestionLevel>.}",
+            "dialect": "CQELS",
+            "name": "Q2",
+            "type": "query"
+        }
+    ],
+    "streams": [
+        {
+            "location": "http://triplewave1.westeurope.cloudapp.azure.com:4000/sgraph",
+            "name": "AarhusWeatherData0",
+            "scale_factor": 1,
+            "window": {
+                "range": "3s",
+                "step": "1s"
+            }
+        },
+        {
+            "location": "http://triplewave1.westeurope.cloudapp.azure.com:4001/sgraph",
+            "name": "AarhusTrafficData158505",
+            "scale_factor": 1,
+            "window": {
+                "range": "3s",
+                "step": "1s"
+            }
+        }
+    ]
+}

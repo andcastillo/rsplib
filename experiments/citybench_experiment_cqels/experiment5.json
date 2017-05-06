@@ -1,0 +1,35 @@
+{
+    "engine": {
+        "dialect": "CQELS",
+        "host": "http://cqels.westeurope.cloudapp.azure.com",
+        "port": 80
+    },
+    "graphs": [
+        {
+            "default": "true",
+            "location": "https://rsplab.blob.core.windows.net/static/AarhusCulturalEvents.rdf",
+            "name": "culturalevents",
+            "serialization": "RDF/XML"
+        }
+    ],
+    "metadata": {},
+    "queries": [
+        {
+            "body": "SELECT ?evtId ?title ?obId2 ?lat1 ?lon1 ?lat2 ?lon2 FROM NAMED <culturalevents>\n where {stream <UserLocationService> [range 3s]\n{?obId2 a ?ob.?obId2 <http://purl.oclc.org/NET/ssnx/ssn#observedProperty> ?p2.?obId2 <http://purl.oclc.org/NET/sao/hasValue> ?v2.?obId2 <http://purl.oclc.org/NET/ssnx/ssn#observedBy> <http://www.insight-centre.org/dataset/SampleEventService#AarhusTrafficData158505>.}graph<culturalevents>\n{?evtId a ?ob.?evtId <http://purl.oclc.org/NET/ssnx/ssn#featureOfInterest> ?foi. ?foi <http://www.insight-centre.org/citytraffic#hasFirstNode> ?node. ?node <http://www.insight-centre.org/citytraffic#hasLatitude> ?lat1.  ?node <http://www.insight-centre.org/citytraffic#hasLongitude> ?lon1. ?evtId <http://purl.oclc.org/NET/sao/value> ?title. }?p2   a <http://www.insight-centre.org/citytraffic#CongestionLevel>. ?p2   <http://purl.oclc.org/NET/ssnx/ssn#isPropertyOf> ?foi2.?foi2 <http://www.insight-centre.org/citytraffic#hasStartLatitude> ?lat2. ?foi2 <http://www.insight-centre.org/citytraffic#hasStartLongitude> ?lon2. Filter (((?lat2-?lat1)*(?lat2-?lat1)+(?lon2-?lon1)*(?lon2-?lon1))<0.1)}",
+            "dialect": "CQELS",
+            "name": "Q5",
+            "type": "query"
+        }
+    ],
+    "streams": [
+        {
+            "location": "http://triplewave1.westeurope.cloudapp.azure.com:4000/sgraph",
+            "name": "UserLocationService",
+            "scale_factor": 1,
+            "window": {
+                "range": "3s",
+                "step": "1s"
+            }
+        }
+    ]
+}

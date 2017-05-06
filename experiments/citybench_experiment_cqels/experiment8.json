@@ -1,0 +1,48 @@
+{
+    "duration": {
+        "time": 30,
+        "unit": "seconds"
+    },
+    "engine": {
+        "dialect": "CQELS",
+        "host": "http://cqels.westeurope.cloudapp.azure.com",
+        "port": 80
+    },
+    "graphs": [
+        {
+            "default": "true",
+            "location": "https://rsplab.blob.core.windows.net/static/AarhusLibraryEvents.rdf",
+            "name": "AarhusLibraryEvents",
+            "serialization": "RDF/XML"
+        }
+    ],
+    "metadata": {},
+    "queries": [
+        {
+            "body": "SELECT ?obId1 ?obId2 ?v1 ?v2\nFROM  <AarhusLibraryEvents>\nwhere { ?p1   a <http://www.insight-centre.org/citytraffic#ParkingVacancy>.?p2   a <http://www.insight-centre.org/citytraffic#ParkingVacancy>.Filter(?v1>0||?v2>0)\nSTREAM  <AarhusParkingDataKALKVAERKSVEJ>  [range 5s slide 1s]\n{?obId1 a ?ob.?obId1 <http://purl.oclc.org/NET/ssnx/ssn#observedProperty> ?p1.?obId1 <http://purl.oclc.org/NET/sao/hasValue> ?v1.?obId1 <http://purl.oclc.org/NET/ssnx/ssn#observedBy> <http://www.insight-centre.org/dataset/SampleEventService#AarhusParkingDataKALKVAERKSVEJ>.}\nSTREAM  <AarhusParkingDataSKOLEBAKKEN>  [range 5s slide 1s]\n{?obId2 a ?ob.?obId2 <http://purl.oclc.org/NET/ssnx/ssn#observedProperty> ?p2.?obId2 <http://purl.oclc.org/NET/sao/hasValue> ?v2.?obId2 <http://purl.oclc.org/NET/ssnx/ssn#observedBy> <http://www.insight-centre.org/dataset/SampleEventService#AarhusParkingDataSKOLEBAKKEN>.}\nGRAPH  <AarhusLibraryEvents>  {?evtId a ?ob.?evtId <http://purl.oclc.org/NET/ssnx/ssn#featureOfInterest> ?foi. ?foi <http://www.insight-centre.org/citytraffic#hasFirstNode> ?node. ?node <http://www.insight-centre.org/citytraffic#hasLatitude> ?lat1.  ?node <http://www.insight-centre.org/citytraffic#hasLongitude> ?lon1. ?evtId <http://purl.oclc.org/NET/sao/value> ?title.}\n} ",
+            "dialect": "CQELS",
+            "name": "Q8",
+            "type": "query"
+        }
+    ],
+    "streams": [
+        {
+            "location": "http://triplewave1.westeurope.cloudapp.azure.com:4000/sgraph",
+            "name": "AarhusParkingDataKALKVAERKSVEJ",
+            "scale_factor": 1,
+            "window": {
+                "range": "5s",
+                "step": "1s"
+            }
+        },
+        {
+            "location": "http://triplewave1.westeurope.cloudapp.azure.com:4001/sgraph",
+            "name": "AarhusParkingDataSKOLEBAKKEN",
+            "scale_factor": 1,
+            "window": {
+                "range": "5s",
+                "step": "1s"
+            }
+        }
+    ]
+}
