@@ -1,6 +1,7 @@
 import json, os
 import requests
 from enum import Enum
+import datetime, time
 
 def open_remote(url):
     e = requests.get(url).json()
@@ -22,19 +23,18 @@ def _spawn_collectors(tobserve,experiment,report):
                 volumes={'resultsdata': {'bind': '/usr/src/app/data', 'mode': 'rw'}}, 
                 detach=True)
 
-def execute(experiment, stream_running=True, collect=False):
-    
+def deploy(experiment, stream_running=True):
+    engine = RSPClient(experiment.engine()['host'], experiment.engine()['port']);
+    #if(not stream_running):
+        #TODO start streams on triplewave host
     engine = RSPClient(experiment.engine()['host'], experiment.engine()['port']);
     
     execution = ExperimentExecution(experiment)
     execution.set_engine(engine.engine())
 
     for d in experiment.graphs():
-            print("Registering static sources: " + d.name)
+            print("Registering static sources: " + d.location)
             execution.add_graph(engine.register_graph( d.name, d.location, d.serialization, d.default ))
-            
-    #if(not stream_running):
-        #TODO start streams on triplewave host
 
     for s in experiment.stream_set():
             print ("Registering stream: " + s.name)
@@ -49,13 +49,52 @@ def execute(experiment, stream_running=True, collect=False):
             execution.add_observer({q.name:ro})
             execution.add_queries(engine.queries());
     
+    return execution
+
+def now():
+    return datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
+
+def execute(execution, stream_running=True, collect=False):
+    
+    engine = RSPClient(execution.experiment.engine()['host'], execution.experiment.engine()['port']);
+        
+    
+    execution.set_start(now())
+    
     #print(experiment_execution)
     #report=json.dumps(experiment_execution, indent=4, sort_keys=True)
 
     if(collect):
        _spawn_collectors(tobserve, experiment, report)
+    
+    unit = execution.experiment.duration()["unit"]
+    amount = execution.experiment.duration()["time"]
+    
+    intervals = [
+    ('weeks', 604800),  # 60 * 60 * 24 * 7
+    ('days', 86400),    # 60 * 60 * 24
+    ('hours', 3600),    # 60 * 60
+    ('minutes', 60),
+    ('seconds', 1),
+        ]
 
-    return execution
+    for i in intervals:
+        if (unit == i[0]):
+            amount = amount * i[1]
+    
+    end = datetime.datetime.fromtimestamp(time.time()+amount).strftime('%Y-%m-%d %H:%M:%S')
+    
+    print("Experiment will terminate at "+str(end))
+    time.sleep(amount)
+    print("Closing Up"+ str(datetime.datetime.fromtimestamp(time.time()+amount).strftime('%Y-%m-%d %H:%M:%S')))
+    
+    for q in engine.queries():
+        for o in engine.observers(q["id"]):
+            engine.unregister_observer(q["id"], o["id"])
+        engine.unregister_query(q["id"])
+    for s in engine.streams():
+        engine.unregister_stream(s["streamURL"])
+    
 #end
 
 
@@ -71,16 +110,17 @@ class QueryType(Enum):
     ASK       = "ASK"
     DESCRIBE  = "DESCRIBE"
 
+class PatternType(Enum):
+    WINDOW = "WINDOW"
+    GRAPH  = "GRAPH"
+    STREAM = "STREAM"
+
 class Window(object):
 
-    def __init__(self, omega, beta):
-        self.range=omega
-        self.step=beta
-        self.bgp=None
-
-    def add_bgp(self,bgp):
-        self.bgp=bgp
-        return self
+    def __init__(self, omega, beta, stream):
+        self.range  = omega
+        self.step   = beta
+        self.stream = stream
 
     def __dict__(self):
         return {"range": str(self.range), "step":str(self.step)};
@@ -93,7 +133,8 @@ class Window(object):
 
 class Stream(object):
 
-    def __init__(self, name, sgraph_location, scale_factor=1):
+    def __init__(self, name, sgraph_location, scale_factor, query):
+        self.query=query
         self.name=name
         self.location=sgraph_location
         self.scale_factor=scale_factor
@@ -103,14 +144,14 @@ class Stream(object):
         return requests.get(self.location).json()
 
     def add_window(self, w, b):
-        self.window = Window(w,b)
+        self.window = Window(w, b, self)
         return self.window
 
     def range(self):
-        return self.range 
+        return self.window.range 
 
     def step(self):
-        return self.step
+        return self.window.step
 
     def __dict__(self):
         return { "name":self.name, "location":self.location, "scale_factor":self.scale_factor, 
@@ -124,11 +165,12 @@ class Stream(object):
 
 class Graph(object):
 
-    def __init__(self, name, location, serialization, default="false"):
+    def __init__(self, name, location, serialization, default, query):
         self.name=name
         self.location=location
         self.default=default
         self.serialization=serialization
+        self.query=query
 
     def __dict__(self):
         return {"name":self.name, "location":self.location, "default":self.default, "serialization":self.serialization }
@@ -139,66 +181,217 @@ class Graph(object):
     def __repr__(self):
         return self.__str__()
     
+class Where(object):
     
+    def __init__(self, default, query):
+        self.query   = query
+        self.default = [default]
+        self.unnamed = []
+        self.named   = []
+    
+    def add_default(self, default):
+        self.default.append(default)
+        return self
+
+    def add_named(self, ptype, name, pattern):
+        self.named.append({"type":ptype, "name":name, "pattern":pattern})
+        return self
+    
+    def add_named_graph(self, name, pattern):
+        if("?" in name): 
+            return self._add_var_named_graph(name, pattern)
+        else:
+            return self._add_uri_named_graph(name, pattern)
+            
+    def _add_uri_named_graph(self, name, pattern):
+        self.named.append({"type":PatternType.GRAPH, "name":name, "pattern":pattern})
+        return next(filter(lambda s: s.name==name, self.query.graphs))
+    
+    def _add_var_named_graph(self, var, pattern):
+        self.named.append({"type":PatternType.GRAPH, "name":var, "pattern":pattern})
+        return self
+    
+    def add_named_window(self, name, pattern):
+        self.named.append({"type":PatternType.WINDOW, "name":name, "pattern":pattern})
+        return self
+    
+    def add_named_stream(self, name, pattern):
+        self.named.append({"type":PatternType.STREAM, "name":name, "pattern":pattern})
+        return next(filter(lambda s: s.name==name, self.query.streams))
+   
+    def add_unnamed(self, ptype, pattern):
+        self.unnamed.append({"type":ptype, "pattern":pattern})
+        return self
+    
+    def add_graph(self, pattern):
+        self.unnamed.append({"type":PatternType.GRAPH, "pattern":pattern})
+        return self
+    
+    def add_window(self, pattern):
+        self.unnamed.append({"type":PatternType.WINDOW, "pattern":pattern})
+        return self
+        
+    def add_stream(self, pattern):
+        self.unnamed.append({"type":PatternType.STREAM, "pattern":pattern})
+        return self
+ 
+    def get_query():
+        return self.query
+    
+    def set_group_by(self,*args):
+        var_list = ""
+        for a in args:
+            var_list+=a
+            
+        self.group_by = var_list
+       
+    def set_having(self,having):
+        self.having = having
 
 class Query(object):
 
     def __init__(self,name, query_type, dialect):
         self.select_clause= ""
-        self.where_clause= ""
+        self.where_clause= None
         self.query_type = query_type
         self.name= name
         self.streams = []
         self.graphs = [] 
         self.dialect=dialect
+        self.prefixes = {}
 
     def set_select_clause(self,select):
         self.select_clause = select
     
-    def set_where_clause(self,where):
-        self.where_clause = where
+    def set_where_clause(self, where):
+        self.where_clause = Where(where, self)
+        return self.where_clause
     
-    def add_stream(self, name, location):
-        s = Stream(name, location)
+    def add_stream(self, name, location, scale=1):
+        s = Stream(name, location, scale, self)
         self.streams.append(s)
         self.experiment._add_to_stream_set(s)
         return s
 
-    def add_windowed_stream(self, name, location, omega, beta):
-        s = Stream(name, location)
+    def add_windowed_stream(self, name, location, omega, beta, scale=1):
+        s = Stream(name, location, scale, self)
         s.add_window(omega, beta)
         self.streams.append(s)
         self.experiment._add_to_stream_set(s)
         return self
     
-    def add_graph(self, g, location, serialization, default):
-        d = graph(g,location, serialization, default)
-        self.graphs.append(d)
-        self.experiment._add_to_graphs(d)
-        return d
+    def add_graph(self, name, location, serialization, default="false"):
+        g = Graph(name, location, serialization, default, self)
+        self.graphs.append(g)
+        self.experiment._add_to_graphs(g)
+        return g
     
+    def get_stream(self, name):
+        return next(filter(lambda s:s.name==name, self.streams))
+ 
     def _to_string_csparql(self):
         query = ""
+  
+        for key,value in self.prefixes.items():
+            prefixQuery = "PREFIX "+ key +":<"+value+"> "
+            query+=prefixQuery
+        
+            
         if(self.query_type=="query"):
             query += "SELECT "
         else:
             query += "CONSTRUCT "
         
-        query+=self.select_clause        
+        query+=self.select_clause       
         for s in self.streams:
-            streamQuery = " FROM STREAM <"+s.name+"> [RANGE "+str(s.range)+" STEP "+ str(s.step)+"]\n"
+            streamQuery = " FROM STREAM <"+s.name+"> [RANGE "+str(s.range())+" STEP "+ str(s.step())+"]\n"
             query+=streamQuery
         
         for d in self.graphs:
-            graphQuery = "FROM <"+d.location+">\n"
-            query+=graphQuery
+            named=""
+            if (d.default=="false"):
+                name="NAMED"
+            graphQuery = "FROM "+named+" <"+d.name+">\n"
             
-        query+="\nWHERE "
-        query+=self.where_clause
+        query+="WHERE {"
+        
+        where = self.where_clause
+        
+        for d in where.default:
+            query+= d + "\n"
+        
+        for u in where.unnamed:
+            stringQuery = "{" + u["pattern"] + "}\n"
+            query+=stringQuery
+                                                            
+        for u in where.named:
+            if(u["type"] == PatternType.STREAM):
+                raise SyntaxError("Syntax Error")
+            
+            if(not("?" in u["name"])):
+                name = " <"+u["name"]+"> "
+            else:
+                name = u["name"] 
+            stringQuery = PatternType.GRAPH.value + " " + name +"\n {" + u["pattern"] + "}\n"
+            query+= stringQuery
+     
+        query+="}"
+        
         return query
     
     def _to_string_cqels(self):
         query=""
+        
+        if(self.query_type=="query"):
+            query += "SELECT "
+        else:
+            query += "CONSTRUCT "
+        
+        query+=self.select_clause +"\n"
+        
+        for d in self.graphs:
+            named=""
+            if (d.default=="false"):
+                named="NAMED"
+            graphQuery = "FROM "+named+" <"+d.name+">\n"
+            query+=graphQuery
+            
+        query+="where { "
+        
+        where = self.where_clause
+        
+        for d in where.default:
+            query+= d + "\n"
+        
+        for u in where.unnamed:
+            stringQuery = "{" + u["pattern"] + "}\n"
+            query+=stringQuery
+                                                            
+        for u in where.named:
+            win=""
+            if(u["type"] == PatternType.STREAM):
+                s = self.get_stream(u["name"])
+                win = "[range " + str(s.range())
+                if(s.step()!='0'):
+                    win+= " slide " + s.step()
+                win+= "]\n"
+            if(not("?" in u["name"])):
+                name = " <"+u["name"]+"> "
+            else:
+                name = u["name"] 
+
+            stringQuery = u["type"].value + " " + name + " "  + win + "{" + u["pattern"] + "}\n"
+            query+= stringQuery
+     
+        query+="} "
+        
+        if(where.group_by!=None):
+            query+="\ngroup by "+where.group_by
+        
+
+        if(where.having!=None):
+            query+="\nhaving "+where.having
+
         return query
 
     def query_body(self):
@@ -218,6 +411,10 @@ class Query(object):
     
     def set_experiment(self, e):
         self.experiment = e
+    
+    def add_prefix(self,key,value):
+        self.prefixes[key]=value
+        
 
 class Experiment(object):
 
@@ -228,7 +425,8 @@ class Experiment(object):
                 "queries"  : [],
                 "streams"  : [],
                 "graphs" : [],
-                "engine"   : {}
+                "engine"   : {},
+                "duration": {}
             }
         else:
             self.experiment=args[0]
@@ -253,6 +451,9 @@ class Experiment(object):
 
     def graphs(self):
         return self.experiment['graphs']
+    
+    def duration(self):
+        return self.experiment['duration']
 
     def _add_to_query_set(self, q):
         self.experiment['queries'].append(q)
@@ -262,6 +463,10 @@ class Experiment(object):
 
     def _add_to_graphs(self, d):
         self.experiment['graphs'].append(d)
+        
+    def set_duration(self, time, unit):
+        self.experiment["duration"] =  {"time":time, "unit":unit}
+        return self
 
     def add_engine(self, host, port,d):
         self.experiment['engine']={"host":host, "port":port, "dialect": d.name}
@@ -274,37 +479,32 @@ class Experiment(object):
         return q
     
     def get_query(self, name):
-        for q in self.experiment['queries']:
-            if q.name==name:
-                return q
-        print(name+" not found")
-        return None
+        return next(filter(lambda q: q.name==name, self.experiment['queries']))
         
-        
-    def add_stream(self, query, name, location):
+    def add_stream(self, query, name, location, scale=1):
         q = self.get_query(query)
         if(q):
-            s = Stream(name, location)
+            s = Stream(name, location, scale, q)
             q.streams.append(s)
             self._add_to_stream_set(s)
         return s
 
-    def add_windowed_stream(self, query, name, location, omega, beta):
+    def add_windowed_stream(self, query, name, location, omega, beta, scale=1):
         q = self.get_query(query)
         if(q):
-            s = Stream(name, location)
+            s = Stream(name, location, scale, q)
             s.add_window(omega, beta)
             q.streams.append(s)
             self._add_to_stream_set(s)
         return self    
     
-    def add_graph(self, query, g, location, serialization, default):
+    def add_graph(self, query, name, location, serialization, default="true"):
         q = self.get_query(query)
         if(q):
-            d = Graph(g,location, serialization, default)
+            d = Graph(name, location, serialization, default, q)
             q.graphs.append(d)
             self._add_to_graphs(d)
-        return self
+        return d
     
     def __str__(self):
         return self.experiment.__str__()
@@ -325,7 +525,13 @@ class ExperimentExecution(object):
         self.experiment_execution['O'] = []
         self.experiment_execution['K'] = None # save the KPIs
         self.experiment_execution['R'] = None # save the result location
-       
+    
+    def set_start(self, start_time):
+        self.experiment_execution['start_time']=start_time
+    
+    def set_end(self, end_time):
+         self.experiment_execution['end_time']=end_time
+
     def set_engine(self, engine):
         self.experiment_execution['E'] = engine
         root = self.experiment_execution['E']['runUUID']
@@ -418,9 +624,10 @@ class RSPClient(object):
         r = requests.get(self.base+"/queries/" + q);
         return self._result(r);
 
-    def register_query(self, q, qtype, body):        
-        data = { 'queryBody': "REGISTER " + qtype.upper() + " " + q + " AS " + body }
-        r = requests.post(self.base+"/queries/" + q, data = data, headers=default_headers);
+    def register_query(self, qname, qtype, body):  
+        data = { 'queryBody': "REGISTER " + qtype.upper() + " " + qname + " AS " + body }
+        print(data)
+        r = requests.post(self.base+"/queries/" + qname, data = data, headers=default_headers);
         return self._result(r);
 
     def unregister_query(self, q):

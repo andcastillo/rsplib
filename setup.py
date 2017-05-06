@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='rsplib',
-      version='0.2.1',
+      version='0.2.2',
       description='RSP python library',
       url='https://github.com/riccardotommasini/rsplib',
       author='Riccardo Tommasini',
