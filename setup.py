@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(name='rsplib',
       version='0.2.2',
@@ -7,5 +7,6 @@ setup(name='rsplib',
       author='Riccardo Tommasini',
       author_email='riccardo.tommasini@polimi.it',
       license='MIT',
-      packages=['rsplib'],
+      packages=find_packages(),
+      include_package_data=True,
       zip_safe=False)

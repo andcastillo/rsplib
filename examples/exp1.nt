@@ -1,0 +1,54 @@
+<http://rsp-lab.org/experiments/exp1> <http://rdfs.org/ns/void#subset> <http://rsp-lab.org/experiments/experiment1_jsonld> .
+<http://rsp-lab.org/experiments/exp1> <http://rdfs.org/ns/void#subset> <http://rsp-lab.org/experiments/experiment1_query_results> .
+<http://rsp-lab.org/experiments/experiment1_query_results> <http://purl.org/dc/terms/subject> <file:///Users/Riccardo/_Projects/Streamreasoning/RSP/rsplib/report/CSPARQL> .
+<http://rsp-lab.org/experiments/exp1> <http://purl.org/dc/terms/license> <http://www.opendatacommons.org/odc-public-domain-dedication-and-licence/> .
+<http://rsp-lab.org/experiments/exp1> <http://rdfs.org/ns/void#subset> <http://rsp-lab.org/experiments/experiment1_cpu> .
+<http://rsp-lab.org/experiments/experiment1_jsonld> <http://purl.org/dc/terms/description> "Experiment1 DOE JSON file" .
+<http://rsp-lab.org/experiments/exp1> <http://purl.org/dc/terms/contributor> <http://rsp-lab.org/experiments/streamreasoning> .
+<http://rsp-lab.org/experiments/experiment1_Q1_results> <http://purl.org/dc/terms/subject> <http://dbpedia.org/resource/QueryResults> .
+<http://rsp-lab.org/experiments/experiment1_Q1_results> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://rdfs.org/ns/void#Dataset> .
+<http://rsp-lab.org/experiments/exp1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://rdfs.org/ns/void#Dataset> .
+<http://rsp-lab.org/experiments/experiment1_query_results> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://rdfs.org/ns/void#Dataset> .
+<http://rsp-lab.org/experiments/experiment1_query_results> <http://purl.org/dc/terms/title> "Experiment1 Results Queries Dataset" .
+<http://rsp-lab.org/experiments/experiment1_query_results> <http://rdfs.org/ns/void#subset> <http://rsp-lab.org/experiments/experiment1_Q2_results> .
+<http://rsp-lab.org/experiments/experiment1_Q2_results> <http://purl.org/dc/terms/title> "Q2 results Dataset" .
+<http://rsp-lab.org/experiments/experiment1_cpu> <http://purl.org/dc/terms/title> "Experiment1 CPU CPU Load Dataset" .
+<http://rsp-lab.org/experiments/exp1> <http://purl.org/dc/terms/subject> <http://dbpedia.org/resource/RSP> .
+<http://rsp-lab.org/experiments/exp1> <http://purl.org/dc/terms/source> <http://rsp-lab.org> .
+<http://rsp-lab.org/experiments/experiment1_cpu> <http://purl.org/dc/terms/subject> <http://dbpedia.org/resource/CPULoad> .
+<http://rsp-lab.org/experiments/exp1> <http://purl.org/dc/terms/title> "experiment1" .
+<http://rsp-lab.org/experiments/experiment1_jsonld> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://rdfs.org/ns/void#Dataset> .
+<http://rsp-lab.org/experiments/experiment1_memory> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://rdfs.org/ns/void#Dataset> .
+<http://rsp-lab.org/experiments/experiment1_memory> <http://purl.org/dc/terms/title> "Experiment1 CPU Memory Load Dataset" .
+<http://rsp-lab.org/experiments/experiment1_Q1_results> <http://rdfs.org/ns/void#feature> <http://www.w3.org/ns/formats/Turtle> .
+<http://rsp-lab.org/experiments/experiment1_Q1_results> <http://purl.org/dc/terms/description> "experiment1 Q1 results Q1 results. Query: SELECT * WHERE {?s ?p ?o}" .
+<http://rsp-lab.org/experiments/exp1> <http://purl.org/dc/terms/contributor> <http://rsp-lab.org/experiments/RSPLab> .
+<http://rsp-lab.org/experiments/experiment1_jsonld> <http://rdfs.org/ns/void#dataDump> <http://example.org/exp1.jsonld> .
+<http://rsp-lab.org/experiments/experiment1_jsonld> <http://purl.org/dc/terms/title> "Experiment1 DOE JSON" .
+<http://rsp-lab.org/experiments/RSPLab> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Organization> .
+<http://rsp-lab.org/experiments/experiment1_Q2_results> <http://purl.org/dc/terms/description> "experiment1 Q2 results Q2 results. Query: SELECT * WHERE {?s2 ?p2 ?o2}" .
+<http://rsp-lab.org/experiments/exp1> <http://purl.org/dc/terms/description> "An experiment" .
+<http://rsp-lab.org/experiments/experiment1_memory> <http://purl.org/dc/terms/subject> <http://dbpedia.org/resource/MemoryLoad> .
+<http://rsp-lab.org/experiments/experiment1_memory> <http://rdfs.org/ns/void#dataDump> <http://example.org/exp1-cpu.csv> .
+<http://rsp-lab.org/experiments/RSPLab> <http://xmlns.com/foaf/0.1/homepage> <http://www.rsp-lab.org/> .
+<http://rsp-lab.org/experiments/experiment1_cpu> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://rdfs.org/ns/void#Dataset> .
+<http://rsp-lab.org/experiments/RSPLab> <http://www.w3.org/2000/01/rdf-schema#label> "RSPLab working group" .
+<http://rsp-lab.org/experiments/experiment1_Q2_results> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://rdfs.org/ns/void#Dataset> .
+<http://rsp-lab.org/experiments/experiment1_Q1_results> <http://rdfs.org/ns/void#dataDump> <http://example.org/Q1.ttl> .
+<http://rsp-lab.org/experiments/experiment1_Q2_results> <http://rdfs.org/ns/void#dataDump> <http://example.org/Q2.ttl> .
+<http://rsp-lab.org/experiments/experiment1_cpu> <http://rdfs.org/ns/void#dataDump> <http://example.org/exp1-cpu.csv> .
+<http://rsp-lab.org/experiments/streamreasoning> <http://xmlns.com/foaf/0.1/homepage> <http://www.streamreasoning.org/> .
+<http://rsp-lab.org/experiments/experiment1_query_results> <http://rdfs.org/ns/void#subset> <http://rsp-lab.org/experiments/experiment1_Q1_results> .
+<http://rsp-lab.org/experiments/streamreasoning> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Organization> .
+<http://rsp-lab.org/experiments/exp1> <http://purl.org/dc/terms/subject> <http://dbpedia.org/resource/Streamreasoning> .
+<http://rsp-lab.org/experiments/experiment1_memory> <http://purl.org/dc/terms/description> "Experiment1 CPU Memory Load Dataset. Duration: 15 minutes" .
+<http://rsp-lab.org/experiments/experiment1_cpu> <http://purl.org/dc/terms/description> "Experiment1 CPU CPU Load Dataset. Duration: 15 minutes" .
+<http://rsp-lab.org/experiments/experiment1_Q1_results> <http://purl.org/dc/terms/title> "Q1 results Dataset" .
+<http://rsp-lab.org/experiments/experiment1_Q2_results> <http://purl.org/dc/terms/subject> <http://dbpedia.org/resource/QueryResults> .
+<http://rsp-lab.org/experiments/exp1> <http://purl.org/dc/terms/modified> "2017-05-08"^^<http://www.w3.org/2001/XMLSchema#date> .
+<http://rsp-lab.org/experiments/streamreasoning> <http://www.w3.org/2000/01/rdf-schema#label> "Streamreasoning working group" .
+<http://rsp-lab.org/experiments/experiment1_query_results> <http://purl.org/dc/terms/description> "Experiment1 Results Queries. Included queries Q1, Q2" .
+<http://rsp-lab.org/experiments/exp1> <http://purl.org/dc/terms/subject> <http://dbpedia.org/resource/CSPARQL> .
+<http://rsp-lab.org/experiments/exp1> <http://rdfs.org/ns/void#subset> <http://rsp-lab.org/experiments/experiment1_memory> .
+<http://rsp-lab.org/experiments/experiment1_Q2_results> <http://rdfs.org/ns/void#feature> <http://www.w3.org/ns/formats/Turtle> .
+

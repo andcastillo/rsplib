@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+   xmlns:dcterms="http://purl.org/dc/terms/"
+   xmlns:foaf="http://xmlns.com/foaf/0.1/"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+   xmlns:void="http://rdfs.org/ns/void#"
+>
+  <rdf:Description rdf:about="http://rsp-lab.org/experiments/exp1">
+    <dcterms:description>An experiment</dcterms:description>
+    <dcterms:subject rdf:resource="http://dbpedia.org/resource/RSP"/>
+    <dcterms:title>experiment1</dcterms:title>
+    <dcterms:subject rdf:resource="http://dbpedia.org/resource/Streamreasoning"/>
+    <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2017-05-08</dcterms:modified>
+    <void:subset rdf:resource="http://rsp-lab.org/experiments/experiment1_jsonld"/>
+    <void:subset rdf:resource="http://rsp-lab.org/experiments/experiment1_memory"/>
+    <rdf:type rdf:resource="http://rdfs.org/ns/void#Dataset"/>
+    <dcterms:contributor rdf:resource="http://rsp-lab.org/experiments/RSPLab"/>
+    <dcterms:source rdf:resource="http://rsp-lab.org"/>
+    <void:subset rdf:resource="http://rsp-lab.org/experiments/experiment1_cpu"/>
+    <dcterms:contributor rdf:resource="http://rsp-lab.org/experiments/streamreasoning"/>
+    <void:subset rdf:resource="http://rsp-lab.org/experiments/experiment1_query_results"/>
+    <dcterms:license rdf:resource="http://www.opendatacommons.org/odc-public-domain-dedication-and-licence/"/>
+    <dcterms:subject rdf:resource="http://dbpedia.org/resource/CSPARQL"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://rsp-lab.org/experiments/experiment1_memory">
+    <dcterms:title>Experiment1 CPU Memory Load Dataset</dcterms:title>
+    <dcterms:subject rdf:resource="http://dbpedia.org/resource/MemoryLoad"/>
+    <void:dataDump rdf:resource="http://example.org/exp1-cpu.csv"/>
+    <rdf:type rdf:resource="http://rdfs.org/ns/void#Dataset"/>
+    <dcterms:description>Experiment1 CPU Memory Load Dataset. Duration: 15 minutes</dcterms:description>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://rsp-lab.org/experiments/experiment1_cpu">
+    <dcterms:title>Experiment1 CPU CPU Load Dataset</dcterms:title>
+    <dcterms:subject rdf:resource="http://dbpedia.org/resource/CPULoad"/>
+    <rdf:type rdf:resource="http://rdfs.org/ns/void#Dataset"/>
+    <dcterms:description>Experiment1 CPU CPU Load Dataset. Duration: 15 minutes</dcterms:description>
+    <void:dataDump rdf:resource="http://example.org/exp1-cpu.csv"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://rsp-lab.org/experiments/experiment1_Q1_results">
+    <void:dataDump rdf:resource="http://example.org/Q1.ttl"/>
+    <void:feature rdf:resource="http://www.w3.org/ns/formats/Turtle"/>
+    <rdf:type rdf:resource="http://rdfs.org/ns/void#Dataset"/>
+    <dcterms:subject rdf:resource="http://dbpedia.org/resource/QueryResults"/>
+    <dcterms:title>Q1 results Dataset</dcterms:title>
+    <dcterms:description>experiment1 Q1 results Q1 results. Query: SELECT * WHERE {?s ?p ?o}</dcterms:description>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://rsp-lab.org/experiments/experiment1_query_results">
+    <dcterms:subject rdf:resource="file:///Users/Riccardo/_Projects/Streamreasoning/RSP/rsplib/report/CSPARQL"/>
+    <void:subset rdf:resource="http://rsp-lab.org/experiments/experiment1_Q2_results"/>
+    <void:subset rdf:resource="http://rsp-lab.org/experiments/experiment1_Q1_results"/>
+    <dcterms:title>Experiment1 Results Queries Dataset</dcterms:title>
+    <rdf:type rdf:resource="http://rdfs.org/ns/void#Dataset"/>
+    <dcterms:description>Experiment1 Results Queries. Included queries Q1, Q2</dcterms:description>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://rsp-lab.org/experiments/experiment1_Q2_results">
+    <dcterms:title>Q2 results Dataset</dcterms:title>
+    <dcterms:subject rdf:resource="http://dbpedia.org/resource/QueryResults"/>
+    <rdf:type rdf:resource="http://rdfs.org/ns/void#Dataset"/>
+    <dcterms:description>experiment1 Q2 results Q2 results. Query: SELECT * WHERE {?s2 ?p2 ?o2}</dcterms:description>
+    <void:dataDump rdf:resource="http://example.org/Q2.ttl"/>
+    <void:feature rdf:resource="http://www.w3.org/ns/formats/Turtle"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://rsp-lab.org/experiments/RSPLab">
+    <rdfs:label>RSPLab working group</rdfs:label>
+    <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Organization"/>
+    <foaf:homepage rdf:resource="http://www.rsp-lab.org/"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://rsp-lab.org/experiments/experiment1_jsonld">
+    <dcterms:description>Experiment1 DOE JSON file</dcterms:description>
+    <void:dataDump rdf:resource="http://example.org/exp1.jsonld"/>
+    <dcterms:title>Experiment1 DOE JSON</dcterms:title>
+    <rdf:type rdf:resource="http://rdfs.org/ns/void#Dataset"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://rsp-lab.org/experiments/streamreasoning">
+    <foaf:homepage rdf:resource="http://www.streamreasoning.org/"/>
+    <rdfs:label>Streamreasoning working group</rdfs:label>
+    <rdf:type rdf:resource="http://xmlns.com/foaf/0.1/Organization"/>
+  </rdf:Description>
+</rdf:RDF>
