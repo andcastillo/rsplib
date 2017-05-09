@@ -1,8 +1,9 @@
 {
+    "duration": {},
     "engine": {
         "dialect": "CSPARQL",
         "host": "http://csparql.westeurope.cloudapp.azure.com",
-        "port": 8182
+        "port": 80
     },
     "graphs": [
         {
@@ -15,9 +16,41 @@
     "metadata": {},
     "queries": [
         {
-            "body": "SELECT ?evtId ?title ?node ?obId2 ?lat2 ?lon2 ?lat1 ?lon1 FROM STREAM <UserLocationService> [RANGE 3s STEP 1s]\nFROM <https://rsplab.blob.core.windows.net/static/AarhusCulturalEvents.rdf>\n\nWHERE {?evtId a  <http://purl.oclc.org/NET/sao/Point>. ?evtId <http://purl.oclc.org/NET/ssnx/ssn#featureOfInterest> ?foi . ?foi <http://www.insight-centre.org/citytraffic#hasFirstNode> ?node . ?node <http://www.insight-centre.org/citytraffic#hasLatitude> ?lat1 .  ?node <http://www.insight-centre.org/citytraffic#hasLongitude> ?lon1 . ?evtId <http://purl.oclc.org/NET/sao/value> ?title. ?obId2 a <http://purl.oclc.org/NET/ssnx/ssn#Observation>. ?obId2 <http://purl.oclc.org/NET/ssnx/ssn#observedProperty> ?p2. ?obId2 <http://purl.oclc.org/NET/sao/hasValue> ?v2. ?v2 <http://www.insight-centre.org/citytraffic#hasLatitude> ?lat2. ?v2 <http://www.insight-centre.org/citytraffic#hasLongitude> ?lon2. ?obId2 <http://purl.oclc.org/NET/ssnx/ssn#observedBy> <http://www.insight-centre.org/dataset/SampleEventService#UserLocationService>.Filter (((?lat2 - ?lat1)*(?lat2 - ?lat1) + (?lon2 - ?lon1)*(?lon2 - ?lon1)) < 0.1)} ",
+            "body": "SELECT ?evtId ?title ?node ?obId2 ?lat2 ?lon2 ?lat1 ?lon1 FROM STREAM <UserLocationService> [RANGE 3s STEP 1s]\nWHERE {{?evtId a  <http://purl.oclc.org/NET/sao/Point>. ?evtId <http://purl.oclc.org/NET/ssnx/ssn#featureOfInterest> ?foi . ?foi <http://www.insight-centre.org/citytraffic#hasFirstNode> ?node . ?node <http://www.insight-centre.org/citytraffic#hasLatitude> ?lat1 .  ?node <http://www.insight-centre.org/citytraffic#hasLongitude> ?lon1 . ?evtId <http://purl.oclc.org/NET/sao/value> ?title. ?obId2 a <http://purl.oclc.org/NET/ssnx/ssn#Observation>. ?obId2 <http://purl.oclc.org/NET/ssnx/ssn#observedProperty> ?p2. ?obId2 <http://purl.oclc.org/NET/sao/hasValue> ?v2. ?v2 <http://www.insight-centre.org/citytraffic#hasLatitude> ?lat2. ?v2 <http://www.insight-centre.org/citytraffic#hasLongitude> ?lon2. ?obId2 <http://purl.oclc.org/NET/ssnx/ssn#observedBy> <http://www.insight-centre.org/dataset/SampleEventService#UserLocationService>.Filter (((?lat2 - ?lat1)*(?lat2 - ?lat1) + (?lon2 - ?lon1)*(?lon2 - ?lon1)) < 0.1)} \n}",
             "dialect": "CSPARQL",
             "name": "Q4",
+            "structure": {
+                "graphs": [
+                    {
+                        "default": "true",
+                        "location": "https://rsplab.blob.core.windows.net/static/AarhusCulturalEvents.rdf",
+                        "name": "AarhusCulturalEvents",
+                        "serialization": "RDF/XML"
+                    }
+                ],
+                "group_by": "",
+                "having": "",
+                "order_by": "",
+                "select_clause": "?evtId ?title ?node ?obId2 ?lat2 ?lon2 ?lat1 ?lon1",
+                "streams": [
+                    {
+                        "location": "http://triplewave1.westeurope.cloudapp.azure.com:4000/sgraph",
+                        "name": "UserLocationService",
+                        "scale_factor": 1,
+                        "window": {
+                            "range": "3s",
+                            "step": "1s"
+                        }
+                    }
+                ],
+                "where_clause": {
+                    "default": [
+                        "{?evtId a  <http://purl.oclc.org/NET/sao/Point>. ?evtId <http://purl.oclc.org/NET/ssnx/ssn#featureOfInterest> ?foi . ?foi <http://www.insight-centre.org/citytraffic#hasFirstNode> ?node . ?node <http://www.insight-centre.org/citytraffic#hasLatitude> ?lat1 .  ?node <http://www.insight-centre.org/citytraffic#hasLongitude> ?lon1 . ?evtId <http://purl.oclc.org/NET/sao/value> ?title. ?obId2 a <http://purl.oclc.org/NET/ssnx/ssn#Observation>. ?obId2 <http://purl.oclc.org/NET/ssnx/ssn#observedProperty> ?p2. ?obId2 <http://purl.oclc.org/NET/sao/hasValue> ?v2. ?v2 <http://www.insight-centre.org/citytraffic#hasLatitude> ?lat2. ?v2 <http://www.insight-centre.org/citytraffic#hasLongitude> ?lon2. ?obId2 <http://purl.oclc.org/NET/ssnx/ssn#observedBy> <http://www.insight-centre.org/dataset/SampleEventService#UserLocationService>.Filter (((?lat2 - ?lat1)*(?lat2 - ?lat1) + (?lon2 - ?lon1)*(?lon2 - ?lon1)) < 0.1)} "
+                    ],
+                    "named": [],
+                    "unnamed": []
+                }
+            },
             "type": "query"
         }
     ],

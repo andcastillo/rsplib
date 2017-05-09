@@ -1,8 +1,9 @@
 {
+    "duration": {},
     "engine": {
         "dialect": "CSPARQL",
         "host": "http://csparql.westeurope.cloudapp.azure.com",
-        "port": 8182
+        "port": 80
     },
     "graphs": [
         {
@@ -15,9 +16,50 @@
     "metadata": {},
     "queries": [
         {
-            "body": "SELECT ?obId1 ?obId2 ?lat1 ?lon1 ?lat2 ?lon2 ?v1 ?v2 ((?v1+?v2) AS ?sumOfAPI) FROM STREAM <AarhusPollutionData201399> [RANGE 3s STEP 1s]\n FROM STREAM <AarhusPollutionData184892> [RANGE 3s STEP 1s]\nFROM <https://rsplab.blob.core.windows.net/static/SensorRepository.rdf>\n\nWHERE {?p1 <http://purl.oclc.org/NET/ssnx/ssn#isPropertyOf> ?foi1.?foi1 <http://www.insight-centre.org/citytraffic#hasStartLatitude> ?lat1.?foi1 <http://www.insight-centre.org/citytraffic#hasStartLongitude> ?lon1.?p2 <http://purl.oclc.org/NET/ssnx/ssn#isPropertyOf> ?foi2.?foi2 <http://www.insight-centre.org/citytraffic#hasStartLatitude> ?lat2.?foi2 <http://www.insight-centre.org/citytraffic#hasStartLongitude> ?lon2.{?obId1 a ?ob.?obId1 <http://purl.oclc.org/NET/ssnx/ssn#observedProperty> ?p1.?obId1 <http://purl.oclc.org/NET/sao/hasValue> ?v1.?obId1 <http://purl.oclc.org/NET/ssnx/ssn#observedBy> <http://www.insight-centre.org/dataset/SampleEventService#AarhusPollutionData201399>.}{?obId2 a ?ob.?obId2 <http://purl.oclc.org/NET/ssnx/ssn#observedProperty> ?p2.?obId2 <http://purl.oclc.org/NET/sao/hasValue> ?v2.?obId2 <http://purl.oclc.org/NET/ssnx/ssn#observedBy> <http://www.insight-centre.org/dataset/SampleEventService#AarhusPollutionData184892>.}}",
+            "body": "SELECT ?obId1 ?obId2 ?lat1 ?lon1 ?lat2 ?lon2 ?v1 ?v2 ((?v1+?v2) as ?sumOfAPI) FROM STREAM <AarhusPollutionData201399> [RANGE 3s STEP 1s]\n FROM STREAM <AarhusPollutionData184892> [RANGE 3s STEP 1s]\nWHERE {{{?obId1 a ?ob.?obId1 <http://purl.oclc.org/NET/ssnx/ssn#observedProperty> ?p1.?obId1 <http://purl.oclc.org/NET/sao/hasValue> ?v1.?obId1 <http://purl.oclc.org/NET/ssnx/ssn#observedBy> <http://www.insight-centre.org/dataset/SampleEventService#AarhusPollutionData201399>.}{?obId2 a ?ob.?obId2 <http://purl.oclc.org/NET/ssnx/ssn#observedProperty> ?p2.?obId2 <http://purl.oclc.org/NET/sao/hasValue> ?v2.?obId2 <http://purl.oclc.org/NET/ssnx/ssn#observedBy> <http://www.insight-centre.org/dataset/SampleEventService#AarhusPollutionData184892>.}}\n}",
             "dialect": "CSPARQL",
             "name": "Q10",
+            "structure": {
+                "graphs": [
+                    {
+                        "default": "true",
+                        "location": "https://rsplab.blob.core.windows.net/static/SensorRepository.rdf",
+                        "name": "SensorRepository",
+                        "serialization": "RDF/XML"
+                    }
+                ],
+                "group_by": "",
+                "having": "",
+                "order_by": "",
+                "select_clause": "?obId1 ?obId2 ?lat1 ?lon1 ?lat2 ?lon2 ?v1 ?v2 ((?v1+?v2) as ?sumOfAPI)",
+                "streams": [
+                    {
+                        "location": "http://triplewave1.westeurope.cloudapp.azure.com:4000/sgraph",
+                        "name": "AarhusPollutionData201399",
+                        "scale_factor": 1,
+                        "window": {
+                            "range": "3s",
+                            "step": "1s"
+                        }
+                    },
+                    {
+                        "location": "http://triplewave1.westeurope.cloudapp.azure.com:4000/sgraph",
+                        "name": "AarhusPollutionData184892",
+                        "scale_factor": 1,
+                        "window": {
+                            "range": "3s",
+                            "step": "1s"
+                        }
+                    }
+                ],
+                "where_clause": {
+                    "default": [
+                        "{{?obId1 a ?ob.?obId1 <http://purl.oclc.org/NET/ssnx/ssn#observedProperty> ?p1.?obId1 <http://purl.oclc.org/NET/sao/hasValue> ?v1.?obId1 <http://purl.oclc.org/NET/ssnx/ssn#observedBy> <http://www.insight-centre.org/dataset/SampleEventService#AarhusPollutionData201399>.}{?obId2 a ?ob.?obId2 <http://purl.oclc.org/NET/ssnx/ssn#observedProperty> ?p2.?obId2 <http://purl.oclc.org/NET/sao/hasValue> ?v2.?obId2 <http://purl.oclc.org/NET/ssnx/ssn#observedBy> <http://www.insight-centre.org/dataset/SampleEventService#AarhusPollutionData184892>.}}"
+                    ],
+                    "named": [],
+                    "unnamed": []
+                }
+            },
             "type": "query"
         }
     ],
@@ -32,7 +74,7 @@
             }
         },
         {
-            "location": "http://triplewave1.westeurope.cloudapp.azure.com:4002/sgraph",
+            "location": "http://triplewave1.westeurope.cloudapp.azure.com:4000/sgraph",
             "name": "AarhusPollutionData184892",
             "scale_factor": 1,
             "window": {

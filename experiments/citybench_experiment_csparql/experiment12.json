@@ -1,4 +1,5 @@
 {
+    "duration": {},
     "engine": {
         "dialect": "CSPARQL",
         "host": "http://csparql.westeurope.cloudapp.azure.com",
@@ -15,9 +16,41 @@
     "metadata": {},
     "queries": [
         {
-            "body": "SELECT (count(?obId1) as ?obCnt) FROM STREAM <AarhusTrafficData186979> [RANGE 3s STEP 1s]\nFROM <https://rsplab.blob.core.windows.net/static/SensorRepository.rdf>\n\nWHERE {?p1   a <http://www.insight-centre.org/citytraffic#CongestionLevel>.{?obId1 a ?ob.?obId1 <http://purl.oclc.org/NET/ssnx/ssn#observedProperty> ?p1.?obId1 <http://purl.oclc.org/NET/sao/hasValue> ?v1.?obId1 <http://purl.oclc.org/NET/ssnx/ssn#observedBy> ?service1.}Filter(?v1 >= -1)}group by ?service1 having (count(?obId1) > 3)",
+            "body": "SELECT  (count(?obId1) as ?obCnt)   FROM STREAM <AarhusTrafficData186979> [RANGE 3s STEP 1s]\nWHERE { {?p1   a <http://www.insight-centre.org/citytraffic#CongestionLevel>.{?obId1 a ?ob.?obId1 <http://purl.oclc.org/NET/ssnx/ssn#observedProperty> ?p1.?obId1 <http://purl.oclc.org/NET/sao/hasValue> ?v1.?obId1 <http://purl.oclc.org/NET/ssnx/ssn#observedBy> ?service1.}Filter(?v1 >= -1)}\n}\ngroup by ?service1\nhaving (count(?obId1) > 3)",
             "dialect": "CSPARQL",
             "name": "Q12",
+            "structure": {
+                "graphs": [
+                    {
+                        "default": "true",
+                        "location": "https://rsplab.blob.core.windows.net/static/SensorRepository.rdf",
+                        "name": "SensorRepository",
+                        "serialization": "RDF/XML"
+                    }
+                ],
+                "group_by": "?service1",
+                "having": "(count(?obId1) > 3)",
+                "order_by": "",
+                "select_clause": " (count(?obId1) as ?obCnt)  ",
+                "streams": [
+                    {
+                        "location": "http://triplewave1.westeurope.cloudapp.azure.com:4000/sgraph",
+                        "name": "AarhusTrafficData186979",
+                        "scale_factor": 1,
+                        "window": {
+                            "range": "3s",
+                            "step": "1s"
+                        }
+                    }
+                ],
+                "where_clause": {
+                    "default": [
+                        " {?p1   a <http://www.insight-centre.org/citytraffic#CongestionLevel>.{?obId1 a ?ob.?obId1 <http://purl.oclc.org/NET/ssnx/ssn#observedProperty> ?p1.?obId1 <http://purl.oclc.org/NET/sao/hasValue> ?v1.?obId1 <http://purl.oclc.org/NET/ssnx/ssn#observedBy> ?service1.}Filter(?v1 >= -1)}"
+                    ],
+                    "named": [],
+                    "unnamed": []
+                }
+            },
             "type": "query"
         }
     ],
