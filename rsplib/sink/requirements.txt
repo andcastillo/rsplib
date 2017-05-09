@@ -1,0 +1,3 @@
+rsplib
+websocket
+websocket-client
