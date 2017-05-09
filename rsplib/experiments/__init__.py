@@ -1,5 +1,5 @@
 import json, os, requests, datetime, time, uuid, threading
-from rsplib.processing.consumer.query import *
+from rsplib.processing.consumer.query import Query, Dialects, Stream, Graph, Where, Window
 
 def open_remote(url):
     e = requests.get(url).json()
