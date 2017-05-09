@@ -1,6 +1,7 @@
 
 results
 results/*
+old/
 src/
 # Byte-compiled / optimized / DLL files
 __pycache__/
