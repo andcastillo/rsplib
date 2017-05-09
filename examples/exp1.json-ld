@@ -1,0 +1,164 @@
+{
+    "@context": {
+        "dbpedia": "http://dbpedia.org/resource/",
+        "dc": "http://purl.org/dc/elements/1.1/",
+        "dcterms": "http://purl.org/dc/terms/",
+        "foaf": "http://xmlns.com/foaf/0.1/",
+        "owl": "http://www.w3.org/2002/07/owl#",
+        "prov": "http://www.w3.org/ns/prov#",
+        "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+        "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+        "rsplab": "http://rsp-lab.org/ontology/",
+        "sd": "http://www.w3.org/ns/sparql-service-description#",
+        "void": "http://rdfs.org/ns/void#",
+        "wv": "http://vocab.org/waiver/terms/norms",
+        "xsd": "http://www.w3.org/2001/XMLSchema#"
+    },
+    "@graph": [
+        {
+            "@id": "http://rsp-lab.org/experiments/experiment1_query_results",
+            "@type": "void:Dataset",
+            "dcterms:description": "Experiment1 Results Queries. Included queries Q1, Q2",
+            "dcterms:subject": {
+                "@id": "file:///Users/Riccardo/_Projects/Streamreasoning/RSP/rsplib/report/CSPARQL"
+            },
+            "dcterms:title": "Experiment1 Results Queries Dataset",
+            "void:subset": [
+                {
+                    "@id": "http://rsp-lab.org/experiments/experiment1_Q1_results"
+                },
+                {
+                    "@id": "http://rsp-lab.org/experiments/experiment1_Q2_results"
+                }
+            ]
+        },
+        {
+            "@id": "http://rsp-lab.org/experiments/RSPLab",
+            "@type": "foaf:Organization",
+            "foaf:homepage": {
+                "@id": "http://www.rsp-lab.org/"
+            },
+            "rdfs:label": "RSPLab working group"
+        },
+        {
+            "@id": "http://rsp-lab.org/experiments/exp1",
+            "@type": "void:Dataset",
+            "dcterms:contributor": [
+                {
+                    "@id": "http://rsp-lab.org/experiments/RSPLab"
+                },
+                {
+                    "@id": "http://rsp-lab.org/experiments/streamreasoning"
+                }
+            ],
+            "dcterms:description": "An experiment",
+            "dcterms:license": {
+                "@id": "http://www.opendatacommons.org/odc-public-domain-dedication-and-licence/"
+            },
+            "dcterms:modified": {
+                "@type": "xsd:date",
+                "@value": "2017-05-08"
+            },
+            "dcterms:source": {
+                "@id": "http://rsp-lab.org"
+            },
+            "dcterms:subject": [
+                {
+                    "@id": "dbpedia:CSPARQL"
+                },
+                {
+                    "@id": "dbpedia:RSP"
+                },
+                {
+                    "@id": "dbpedia:Streamreasoning"
+                }
+            ],
+            "dcterms:title": "experiment1",
+            "void:subset": [
+                {
+                    "@id": "http://rsp-lab.org/experiments/experiment1_cpu"
+                },
+                {
+                    "@id": "http://rsp-lab.org/experiments/experiment1_jsonld"
+                },
+                {
+                    "@id": "http://rsp-lab.org/experiments/experiment1_query_results"
+                },
+                {
+                    "@id": "http://rsp-lab.org/experiments/experiment1_memory"
+                }
+            ]
+        },
+        {
+            "@id": "http://rsp-lab.org/experiments/experiment1_memory",
+            "@type": "void:Dataset",
+            "dcterms:description": "Experiment1 CPU Memory Load Dataset. Duration: 15 minutes",
+            "dcterms:subject": {
+                "@id": "dbpedia:MemoryLoad"
+            },
+            "dcterms:title": "Experiment1 CPU Memory Load Dataset",
+            "void:dataDump": {
+                "@id": "http://example.org/exp1-cpu.csv"
+            }
+        },
+        {
+            "@id": "http://rsp-lab.org/experiments/experiment1_cpu",
+            "@type": "void:Dataset",
+            "dcterms:description": "Experiment1 CPU CPU Load Dataset. Duration: 15 minutes",
+            "dcterms:subject": {
+                "@id": "dbpedia:CPULoad"
+            },
+            "dcterms:title": "Experiment1 CPU CPU Load Dataset",
+            "void:dataDump": {
+                "@id": "http://example.org/exp1-cpu.csv"
+            }
+        },
+        {
+            "@id": "http://rsp-lab.org/experiments/streamreasoning",
+            "@type": "foaf:Organization",
+            "foaf:homepage": {
+                "@id": "http://www.streamreasoning.org/"
+            },
+            "rdfs:label": "Streamreasoning working group"
+        },
+        {
+            "@id": "http://rsp-lab.org/experiments/experiment1_Q2_results",
+            "@type": "void:Dataset",
+            "dcterms:description": "experiment1 Q2 results Q2 results. Query: SELECT * WHERE {?s2 ?p2 ?o2}",
+            "dcterms:subject": {
+                "@id": "dbpedia:QueryResults"
+            },
+            "dcterms:title": "Q2 results Dataset",
+            "void:dataDump": {
+                "@id": "http://example.org/Q2.ttl"
+            },
+            "void:feature": {
+                "@id": "http://www.w3.org/ns/formats/Turtle"
+            }
+        },
+        {
+            "@id": "http://rsp-lab.org/experiments/experiment1_Q1_results",
+            "@type": "void:Dataset",
+            "dcterms:description": "experiment1 Q1 results Q1 results. Query: SELECT * WHERE {?s ?p ?o}",
+            "dcterms:subject": {
+                "@id": "dbpedia:QueryResults"
+            },
+            "dcterms:title": "Q1 results Dataset",
+            "void:dataDump": {
+                "@id": "http://example.org/Q1.ttl"
+            },
+            "void:feature": {
+                "@id": "http://www.w3.org/ns/formats/Turtle"
+            }
+        },
+        {
+            "@id": "http://rsp-lab.org/experiments/experiment1_jsonld",
+            "@type": "void:Dataset",
+            "dcterms:description": "Experiment1 DOE JSON file",
+            "dcterms:title": "Experiment1 DOE JSON",
+            "void:dataDump": {
+                "@id": "http://example.org/exp1.jsonld"
+            }
+        }
+    ]
+}

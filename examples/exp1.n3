@@ -1,0 +1,83 @@
+@prefix dc:    <http://purl.org/dc/elements/1.1/> .
+@prefix prov:  <http://www.w3.org/ns/prov#> .
+@prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+@prefix sd:    <http://www.w3.org/ns/sparql-service-description#> .
+@prefix void:  <http://rdfs.org/ns/void#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix wv:    <http://vocab.org/waiver/terms/norms> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rsplab:   <http://rsp-lab.org/ontology/> .
+@prefix : <http://rsp-lab.org/experiments/> .
+
+:RSPLab a foaf:Organization;
+    rdfs:label "RSPLab working group";
+    foaf:homepage <http://www.rsp-lab.org/> .
+
+:streamreasoning a foaf:Organization;
+    rdfs:label "Streamreasoning working group";
+    foaf:homepage <http://www.streamreasoning.org/> .
+
+:exp1 a void:Dataset;
+    dcterms:title "experiment1";
+    dcterms:description "An experiment";
+    dcterms:contributor :RSPLab;
+    dcterms:contributor :streamreasoning;
+    dcterms:source <http://rsp-lab.org>;
+    dcterms:modified "2017-05-08 15:37:24"^^xsd:date;
+
+    dcterms:subject <http://dbpedia.org/resource/CSPARQL>;
+    dcterms:subject <http://dbpedia.org/resource/RSP>;
+    dcterms:subject <http://dbpedia.org/resource/Streamreasoning>; 	
+ 	dcterms:license <http://www.opendatacommons.org/odc-public-domain-dedication-and-licence/>; ;
+    void:subset :experiment1_jsonld;
+    void:subset :experiment1_cpu;
+    void:subset :experiment1_memory;
+    void:subset :experiment1_query_results.
+
+
+:experiment1_jsonld a void:Dataset;
+    dcterms:title "Experiment1 DOE JSON";
+    dcterms:description "Experiment1 DOE JSON file";
+    void:dataDump <http://example.org/exp1.jsonld> .
+
+:experiment1_cpu a void:Dataset;
+    dcterms:title "Experiment1 CPU CPU Load Dataset";
+    dcterms:description "Experiment1 CPU CPU Load Dataset. Duration: 15 minutes";
+    void:dataDump <http://example.org/exp1-cpu.csv>;
+    dcterms:subject <http://dbpedia.org/resource/CPULoad> .
+
+:experiment1_memory a void:Dataset;
+    dcterms:title "Experiment1 CPU Memory Load Dataset";
+    dcterms:description "Experiment1 CPU Memory Load Dataset. Duration: 15 minutes";
+    void:dataDump <http://example.org/exp1-cpu.csv>;
+    dcterms:subject <http://dbpedia.org/resource/MemoryLoad> .
+
+:experiment1_query_results a void:Dataset;
+    dcterms:subject <CSPARQL>;
+    dcterms:title "Experiment1 Results Queries Dataset";
+    dcterms:description "Experiment1 Results Queries. Included queries Q1, Q2";
+    void:subset :experiment1_Q1_results;
+    void:subset :experiment1_Q2_results.
+
+
+:experiment1_Q1_results a void:Dataset;
+    void:feature <http://www.w3.org/ns/formats/Turtle>;
+    dcterms:subject <http://dbpedia.org/resource/QueryResults>;
+    dcterms:title "Q1 results Dataset";
+    dcterms:description "experiment1 Q1 results Q1 results. Query: SELECT * WHERE {?s ?p ?o}";
+    void:dataDump <http://example.org/Q1.ttl> .
+
+:experiment1_Q2_results a void:Dataset;
+    void:feature <http://www.w3.org/ns/formats/Turtle>;
+    dcterms:subject <http://dbpedia.org/resource/QueryResults>;
+    dcterms:title "Q2 results Dataset";
+    dcterms:description "experiment1 Q2 results Q2 results. Query: SELECT * WHERE {?s2 ?p2 ?o2}";
+    void:dataDump <http://example.org/Q2.ttl> .
+
+
+
+
+

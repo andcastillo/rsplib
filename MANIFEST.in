@@ -1,0 +1,6 @@
+recursive-include rsplib *.py
+recursive-include rsplib *.json
+recursive-include rsplib *.tmpl
+include README
+include LICENSE
+include requirements.txt
