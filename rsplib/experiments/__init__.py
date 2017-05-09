@@ -160,7 +160,7 @@ class Experiment(object):
             d = Graph(name, location, serialization, default, q)
             q.graphs.append(d)
             self._add_to_graphs(d)
-        return d
+        return self
     
     def __str__(self):
         return self.experiment.__str__()

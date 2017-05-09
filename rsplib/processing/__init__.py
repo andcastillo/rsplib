@@ -3,6 +3,9 @@ import requests
 from enum import Enum
 import datetime, time
 
+from rsplib.processing.consumer import RSPEngine
+from rsplib.experiments import Experiment, ExperimentExecution
+
 def open_remote(url):
     e = requests.get(url).json()
     return Experiment(e)
@@ -23,10 +26,7 @@ def _spawn_collectors(tobserve,experiment,report):
                 detach=True)
 
 def deploy(experiment, stream_running=True):
-    engine = RSPClient(experiment.engine()['host'], experiment.engine()['port']);
-    #if(not stream_running):
-        #TODO start streams on triplewave host
-    engine = RSPClient(experiment.engine()['host'], experiment.engine()['port']);
+    engine = RSPEngine(experiment.engine()['host'], experiment.engine()['port']);
     
     execution = ExperimentExecution(experiment)
     execution.set_engine(engine.engine())
@@ -55,13 +55,17 @@ def now():
 
 def execute(execution, stream_running=True, collect=False):
     
-    engine = RSPClient(execution.experiment.engine()['host'], execution.experiment.engine()['port']);
+    engine = RSPEngine(execution.experiment.engine()['host'], execution.experiment.engine()['port']);
         
-    
     execution.set_start(now())
     
     #print(experiment_execution)
     #report=json.dumps(experiment_execution, indent=4, sort_keys=True)
+    
+    root = execution.experiment_execution['E']['runUUID']
+    
+    if not os.path.exists(root):
+        os.makedirs(root)
 
     if(collect):
        _spawn_collectors(tobserve, experiment, report)
@@ -80,13 +84,13 @@ def execute(execution, stream_running=True, collect=False):
     for i in intervals:
         if (unit == i[0]):
             amount = amount * i[1]
-    
-    end = datetime.datetime.fromtimestamp(time.time()+amount).strftime('%Y-%m-%d %H:%M:%S')
-    
-    print("Experiment will terminate at "+str(end))
+
     time.sleep(amount)
-    print("Closing Up"+ str(datetime.datetime.fromtimestamp(time.time()+amount).strftime('%Y-%m-%d %H:%M:%S')))
     
+    execution.set_end(now())
+
+    print("Terminating at "+ str(datetime.datetime.fromtimestamp(now()).strftime('%Y-%m-%d %H:%M:%S')))
+                    
     for q in engine.queries():
         for o in engine.observers(q["id"]):
             engine.unregister_observer(q["id"], o["id"])
