@@ -213,10 +213,11 @@ APIs allowing consumers to interact with RDF Stream processors.
     
     
             "Query query1 succesfully registered"
-    
-### Unregister a Query [DELETE]
 
-    + {TODO}
+### Delete a Query [DELETE]
++ Request
+    + Parameters
+        + query (required, string, `query1`) ... String `name` of the Query.
 
 ## Observers Collection [/queries/{query}/observers]
 
@@ -283,8 +284,9 @@ APIs allowing consumers to interact with RDF Stream processors.
         
         "http://localhost:8181/queries/query1/observers/{query}-{observer}"
 
-
-
-### Remove an Observer from a Query [DELETE]
+### Delete an Observer from a Query [DELETE]
     
-    + {TODO}
++ Request
+    + Parameters
+        + query (required, string, `query1`) ... String `name` of the Query.
+        + observer (required, string, `obs1`) ... String `name` of the Observer.
