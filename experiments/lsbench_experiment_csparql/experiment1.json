@@ -1,0 +1,32 @@
+{
+    "duration": {
+        "time": 30,
+        "unit": "seconds"
+    },
+    "engine": {
+        "dialect": "CSPARQL",
+        "host": "http://csparql.westeurope.cloudapp.azure.com",
+        "port": 80
+    },
+    "graphs": [],
+    "metadata": {},
+    "queries": [
+        {
+            "body": "PREFIX sib:<http://www.ins.cwi.nl/sib/vocabulary/> PREFIX sioc:<http://rdfs.org/sioc/ns#> PREFIX foaf:<http://xmlns.com/foaf/0.1> SELECT ?p ?o FROM STREAM <poststream> [RANGE 1s STEP 1s]\nWHERE {?p ?o.\n}",
+            "dialect": "CSPARQL",
+            "name": "Q1",
+            "type": "query"
+        }
+    ],
+    "streams": [
+        {
+            "location": "http://triplewave1.westeurope.cloudapp.azure.com:4000/sgraph",
+            "name": "poststream",
+            "scale_factor": 1,
+            "window": {
+                "range": "1s",
+                "step": "1s"
+            }
+        }
+    ]
+}

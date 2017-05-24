@@ -1,0 +1,32 @@
+{
+    "duration": {
+        "time": 30,
+        "unit": "seconds"
+    },
+    "engine": {
+        "dialect": "CSPARQL",
+        "host": "http://csparql.westeurope.cloudapp.azure.com",
+        "port": 80
+    },
+    "graphs": [],
+    "metadata": {},
+    "queries": [
+        {
+            "body": "PREFIX foaf:<http://xmlns.com/foaf/0.1> PREFIX sib:<http://www.ins.cwi.nl/sib/vocabulary/> PREFIX sioc:<http://rdfs.org/sioc/ns#> SELECT ?post1 ?post2 ?tag FROM STREAM <poststream> [RANGE 15s STEP 1s]\nWHERE {?post1 sib:hashtag ?tag. ?post2 sib:hashtag ?tag. ?user sioc:creator_of ?post1. ?user sioc:creator_of ?post2. filter (?post1 !=?post2)\n}",
+            "dialect": "CSPARQL",
+            "name": "Q4",
+            "type": "query"
+        }
+    ],
+    "streams": [
+        {
+            "location": "http://triplewave1.westeurope.cloudapp.azure.com:4000/sgraph",
+            "name": "poststream",
+            "scale_factor": 1,
+            "window": {
+                "range": "15s",
+                "step": "1s"
+            }
+        }
+    ]
+}
