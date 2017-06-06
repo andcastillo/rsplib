@@ -44,7 +44,7 @@ def deploy(experiment, stream_running=True):
         for i in range(0,1):
             print(engine.register_query(q.name, q.query_type, q.query_body()))
             print("Registering observers for "+q.name)
-            ro = engine.new_observer(q.name, "default", {"host":"csparql.westeurope.cloudapp.azure.com","type":"ws","port":9101,"name":"default"}); 
+            ro = engine.new_observer(q.name, "default", {"host":experiment.engine()['host'],"type":"ws","port":9101,"name":"default"}); 
             execution.add_observer({q.name:ro})
             execution.add_queries(engine.queries());
     
