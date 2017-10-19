@@ -89,8 +89,8 @@ def execute(execution, stream_running=True, collect=False):
     
     execution.set_end(now())
 
-    print("Terminating at "+ str(datetime.datetime.fromtimestamp(now()).strftime('%Y-%m-%d %H:%M:%S')))
-                    
+    #print("Terminating at "+ str(datetime.datetime.fromtimestamp(now()).strftime('%Y-%m-%d %H:%M:%S')))
+    print("Terminating the experiment")               
     for q in engine.queries():
         for o in engine.observers(q["id"]):
             engine.unregister_observer(q["id"], o["id"])
