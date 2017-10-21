@@ -3,7 +3,9 @@ import requests
 from enum import Enum
 import datetime, time
 
-from rsplib.processing.consumer import RSPEngine
+from rsplib.processing.consumer import RSPEngine, ASPEngine
+from rsplib.processing.source import RSPSource, RSPHub
+
 from rsplib.experiments import Experiment, ExperimentExecution
 
 def open_remote(url):
