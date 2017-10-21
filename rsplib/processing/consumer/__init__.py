@@ -102,6 +102,10 @@ class RSPEngine(object):
         r = requests.get(self.base+"/engine")
         return self._result(r);
     
+    def engine(self):
+        r = requests.get(self.base+"/engine")
+        return self._result(r);
+    
     def rules(self):
         r = requests.get(self.base + "/rules");
         return self._result(r);
